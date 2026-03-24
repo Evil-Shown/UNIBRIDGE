@@ -219,15 +219,21 @@ const Kuppi = () => {
                                 </div>
                                 
                                 <div className="join-btn-container">
-                                    <button 
-                                        className={`btn ${post.userJoined ? 'btn-danger' : 'btn-primary'} btn-join`} 
-                                        onClick={() => doAction(post._id, 'join')}
-                                    >
-                                        {post.userJoined ? 'Leave Session' : 'Apply / Join'}
-                                    </button>
-                                    {isOwner && (
-                                        <button className="btn btn-download" onClick={() => downloadApplicants(post._id)} title="Download Applicants logic (Excel)">
-                                            📊 Export .xlsx
+                                    {isOwner ? (
+                                        <>
+                                            <button className="btn btn-primary btn-join" disabled style={{ cursor: 'not-allowed', opacity: 0.7 }}>
+                                                Your Session
+                                            </button>
+                                            <button className="btn btn-download" onClick={() => downloadApplicants(post._id)} title="Export Applicants as Excel">
+                                                📊 Export .xlsx
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <button 
+                                            className={`btn ${post.userJoined ? 'btn-danger' : 'btn-primary'} btn-join`} 
+                                            onClick={() => doAction(post._id, 'join')}
+                                        >
+                                            {post.userJoined ? 'Leave Session' : 'Apply / Join'}
                                         </button>
                                     )}
                                 </div>

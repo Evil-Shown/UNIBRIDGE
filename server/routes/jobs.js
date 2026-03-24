@@ -16,8 +16,8 @@ router.get('/', async (req, res) => {
 
 router.post('/', async (req, res) => {
     try {
-        if (!['employer', 'admin'].includes(req.user.role)) {
-            return res.status(403).json({ success: false, message: 'Employers or admins only' });
+        if (req.user.role !== 'admin') {
+            return res.status(403).json({ success: false, message: 'Admins only' });
         }
         
         const { title, description, deadline, company, venue, applyLink } = req.body;
@@ -53,8 +53,8 @@ router.post('/', async (req, res) => {
 
 router.patch('/:id/close', async (req, res) => {
     try {
-        if (!['employer', 'admin'].includes(req.user.role)) {
-            return res.status(403).json({ success: false, message: 'Employers or admins only' });
+        if (req.user.role !== 'admin') {
+            return res.status(403).json({ success: false, message: 'Admins only' });
         }
         
         const job = await Job.findByIdAndUpdate(req.params.id, { status: 'CLOSED' }, { new: true });

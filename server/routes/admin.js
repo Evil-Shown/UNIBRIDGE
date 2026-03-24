@@ -46,6 +46,16 @@ router.get('/users', async (req, res) => {
     }
 });
 
+router.put('/users/:id', async (req, res) => {
+    try {
+        const { name, role, bio } = req.body;
+        const user = await User.findByIdAndUpdate(req.params.id, { name, role, bio }, { new: true, runValidators: true });
+        res.json({ success: true, data: user });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
 router.delete('/users/:id', async (req, res) => {
     try {
         await User.findByIdAndDelete(req.params.id);
@@ -60,6 +70,16 @@ router.get('/jobs', async (req, res) => {
     try {
         const jobs = await Job.find().sort({ createdAt: -1 });
         res.json({ success: true, data: jobs });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+router.put('/jobs/:id', async (req, res) => {
+    try {
+        const { title, company, status, deadline, applyLink, venue } = req.body;
+        const job = await Job.findByIdAndUpdate(req.params.id, { title, company, status, deadline, applyLink, venue }, { new: true, runValidators: true });
+        res.json({ success: true, data: job });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }
@@ -84,6 +104,16 @@ router.get('/materials', async (req, res) => {
     }
 });
 
+router.put('/materials/:id', async (req, res) => {
+    try {
+        const { title, module, type, link } = req.body;
+        const material = await Material.findByIdAndUpdate(req.params.id, { title, module, type, link }, { new: true, runValidators: true });
+        res.json({ success: true, data: material });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
 router.delete('/materials/:id', async (req, res) => {
     try {
         await Material.findByIdAndDelete(req.params.id);
@@ -98,6 +128,16 @@ router.get('/kuppis', async (req, res) => {
     try {
         const kuppis = await Kuppi.find().populate('student', 'name email').sort({ createdAt: -1 });
         res.json({ success: true, data: kuppis });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+router.put('/kuppis/:id', async (req, res) => {
+    try {
+        const { title, module, date, location, maxParticipants } = req.body;
+        const kuppi = await Kuppi.findByIdAndUpdate(req.params.id, { title, module, date, location, maxParticipants }, { new: true, runValidators: true });
+        res.json({ success: true, data: kuppi });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }

@@ -82,7 +82,7 @@ function ParticleCanvas() {
 }
 
 // ========== Hero Section ==========
-function Hero({ user }) {
+function Hero({ user, navigate }) {
   const firstName = user?.name?.split(' ')[0] ?? 'Student';
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'Good Morning' : hour < 17 ? 'Good Afternoon' : 'Good Evening';
@@ -100,6 +100,11 @@ function Hero({ user }) {
       <p className="hero-subtitle">
         Your launchpad for materials, opportunities, and peer learning — all in one place.
       </p>
+      <div style={{ marginTop: '24px' }}>
+        <button className="btn btn-outline" onClick={() => navigate('/profile')} style={{ background: 'var(--bg-card)' }}>
+          <span style={{ marginRight: '8px' }}>⚙️</span> Account Settings
+        </button>
+      </div>
     </section>
   );
 }
@@ -193,7 +198,6 @@ const StudentHome = () => {
   const navigate = useNavigate();
 
   const stats = [
-    { icon: '📨', value: 5,  label: 'Applications Sent' },
     { icon: '📚', value: 12, label: 'Materials Saved' },
     { icon: '🎓', value: 3,  label: 'Kuppis Joined' },
     { icon: '✅', value: 2,  label: 'Interviews Scheduled' },
@@ -211,11 +215,6 @@ const StudentHome = () => {
       label: 'Browse Jobs', path: '/student/jobs',
     },
     {
-      icon: '📋', title: 'My Applications', accent: '#10b981',
-      desc: 'Track every application you\'ve submitted — statuses, updates, and next steps.',
-      label: 'View Applications', path: '/student/applications',
-    },
-    {
       icon: '🎓', title: 'Kuppi Hub', accent: '#ec489a',
       desc: 'Organise or join peer study sessions. Collaborative learning, made easy.',
       label: 'Open Kuppi Hub', path: '/student/kuppi',
@@ -223,10 +222,8 @@ const StudentHome = () => {
   ];
 
   const recentActivity = [
-    { icon: '💼', title: 'Applied to Software Engineer – XYZ Ltd',   meta: '2 hours ago · Job Board',          path: '/student/applications' },
     { icon: '📚', title: 'New material uploaded: CS3042 Lecture 7',  meta: 'Yesterday · Lecture Materials',    path: '/student/materials'    },
     { icon: '🎓', title: 'Kuppi: Database Systems – Friday 6 PM',    meta: '2 days ago · Kuppi Hub',           path: '/student/kuppi'        },
-    { icon: '📋', title: 'Application shortlisted – ABC Company',    meta: '3 days ago · My Applications',    path: '/student/applications' },
   ];
 
   return (
@@ -234,7 +231,7 @@ const StudentHome = () => {
       <ParticleCanvas />
       <div className="student-dashboard">
         <div className="container">
-          <Hero user={user} />
+          <Hero user={user} navigate={navigate} />
           <StatGrid stats={stats} />
           <FeatureGrid features={features} navigate={navigate} />
           <RecentActivity activities={recentActivity} navigate={navigate} />

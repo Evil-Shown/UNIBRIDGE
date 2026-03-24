@@ -97,31 +97,7 @@ const Register = () => {
                         />
                         {errors.password && <span className="error-text">{errors.password}</span>}
                     </div>
-                    <div className="form-group">
-                        <label>I am a...</label>
-                        <div className="auth-radio-group">
-                            <label className="auth-radio">
-                                <input 
-                                    type="radio" 
-                                    name="role" 
-                                    value="student" 
-                                    checked={formData.role === 'student'} 
-                                    onChange={e => setFormData({...formData, role: e.target.value})} 
-                                />
-                                Student
-                            </label>
-                            <label className="auth-radio">
-                                <input 
-                                    type="radio" 
-                                    name="role" 
-                                    value="employer" 
-                                    checked={formData.role === 'employer'} 
-                                    onChange={e => setFormData({...formData, role: e.target.value})} 
-                                />
-                                Employer
-                            </label>
-                        </div>
-                    </div>
+                    {/* Registration is now exclusively for standard Student accounts */}
                     <button type="submit" className="auth-btn auth-btn-primary" disabled={loading}>
                         {loading ? 'Creating Account...' : 'Sign Up'}
                     </button>

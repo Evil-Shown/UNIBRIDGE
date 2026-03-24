@@ -33,7 +33,7 @@ const Footer = () => {
                         <Link to="/register" className="footer-link">Sign up</Link>
                     </div>
                 </div>
-                <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '24px', textAlign: 'center', fontSize: '13px' }}>
+                <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', padding: '24px 0', marginTop: '32px', textAlign: 'center', fontSize: '14px', color: 'rgba(255,255,255,0.8)' }}>
                     &copy; {new Date().getFullYear()} UniBridge. All rights reserved.
                 </div>
             </div>

@@ -19,9 +19,7 @@ import Materials from './pages/student/Materials';
 import UploadMaterial from './pages/student/UploadMaterial';
 import Jobs from './pages/student/Jobs';
 import JobDetails from './pages/student/JobDetails';
-import MyApplications from './pages/student/MyApplications';
 import Kuppi from './pages/student/Kuppi';
-import EmployerDashboard from './pages/employer/EmployerDashboard';
 import CreateJob from './pages/employer/CreateJob';
 import ViewApplicants from './pages/employer/ViewApplicants';
 import Profile from './pages/Profile';
@@ -47,15 +45,11 @@ function App() {
         <Route path="/student/materials/upload" element={<ProtectedRoute role="student"><UploadMaterial /></ProtectedRoute>} />
         <Route path="/student/jobs" element={<ProtectedRoute role="student"><Jobs /></ProtectedRoute>} />
         <Route path="/student/jobs/:id" element={<ProtectedRoute role="student"><JobDetails /></ProtectedRoute>} />
-        <Route path="/student/applications" element={<ProtectedRoute role="student"><MyApplications /></ProtectedRoute>} />
         <Route path="/student/kuppi" element={<ProtectedRoute role="student"><Kuppi /></ProtectedRoute>} />
         
-        {/* Employer Routes */}
-        <Route path="/employer/dashboard" element={<ProtectedRoute role={['employer', 'admin']}><EmployerDashboard /></ProtectedRoute>} />
-        <Route path="/employer/jobs/create" element={<ProtectedRoute role={['employer', 'admin']}><CreateJob /></ProtectedRoute>} />
-        <Route path="/employer/jobs/:id/applicants" element={<ProtectedRoute role={['employer', 'admin']}><ViewApplicants /></ProtectedRoute>} />
-
-        {/* Admin Routes */}
+        {/* Admin Jobs & Dashboard Routes */}
+        <Route path="/employer/jobs/create" element={<ProtectedRoute role="admin"><CreateJob /></ProtectedRoute>} />
+        <Route path="/employer/jobs/:id/applicants" element={<ProtectedRoute role="admin"><ViewApplicants /></ProtectedRoute>} />
         <Route path="/admin/dashboard" element={<ProtectedRoute role="admin"><AdminDashboard /></ProtectedRoute>} />
         
         {/* Fallback */}

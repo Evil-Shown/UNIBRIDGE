@@ -12,8 +12,9 @@ router.post('/register', async (req, res) => {
             return res.status(400).json({ success: false, message: 'All fields are required' });
         }
         
-        if (role !== 'student' && role !== 'employer') {
-            return res.status(400).json({ success: false, message: 'Invalid role' });
+        // Default all registrations strictly to students
+        if (role !== 'student') {
+            return res.status(400).json({ success: false, message: 'Only students can register. Admins are configured centrally.' });
         }
         
         const existingUser = await User.findOne({ email: new RegExp(`^${email}$`, 'i') });
@@ -28,7 +29,7 @@ router.post('/register', async (req, res) => {
         
         const payload = { id: user._id, name: user.name, email: user.email, role: user.role };
         
-        const token = jwt.sign(payload, process.env.JWT_SECRET);
+        const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '30m' });
         
         res.status(201).json({ success: true, token, user: payload });
     } catch (err) {
@@ -53,7 +54,7 @@ router.post('/login', async (req, res) => {
         
         const payload = { id: user._id, name: user.name, email: user.email, role: user.role };
         
-        const token = jwt.sign(payload, process.env.JWT_SECRET);
+        const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '30m' });
         
         res.status(200).json({ success: true, token, user: payload });
     } catch (err) {

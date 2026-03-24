@@ -68,7 +68,7 @@ const Navbar = () => {
         <nav className={`navbar-marvel ${scrolled ? 'navbar-scrolled' : ''}`}>
             <div className="navbar-container">
                 <Link
-                    to={user ? (user.role === 'student' ? '/student/home' : '/employer/dashboard') : '/'}
+                    to={user ? (user.role === 'student' ? '/student/home' : '/admin/dashboard') : '/'}
                     className="navbar-logo"
                 >
                     <span className="logo-icon">🎓</span>
@@ -95,11 +95,10 @@ const Navbar = () => {
                         <>
                             {user.role === 'student' ? (
                                 <>
-                                    <Link to="/student/home" className="navbar-link">Home</Link>
+                                    <Link to="/" className="navbar-link">Home</Link>
                                     <Link to="/student/materials" className="navbar-link">Materials</Link>
                                     <Link to="/student/materials/upload" className="navbar-link">Upload</Link>
                                     <Link to="/student/jobs" className="navbar-link">Job Market</Link>
-                                    <Link to="/student/applications" className="navbar-link">My Applications</Link>
                                     <Link to="/student/kuppi" className="navbar-link">Kuppi</Link>
                                     <div className="navbar-notification" onClick={openNotifications} role="button" tabIndex={0}>
                                         🔔
@@ -122,13 +121,14 @@ const Navbar = () => {
                                 </>
                             ) : (
                                 <>
-                                    <Link to="/employer/dashboard" className="navbar-link">Dashboard</Link>
+                                    <Link to="/" className="navbar-link">Home</Link>
                                     <Link to="/employer/jobs/create" className="navbar-link">Post Job</Link>
                                 </>
                             )}
                             <button
-                                onClick={() => navigate('/profile')}
+                                onClick={() => navigate(user?.role === 'student' ? '/student/home' : '/admin/dashboard')}
                                 className="profile-btn"
+                                title="Go to Dashboard"
                             >
                                 <div className="profile-avatar">
                                     {user?.name?.charAt(0).toUpperCase() || 'U'}

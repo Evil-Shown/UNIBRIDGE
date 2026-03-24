@@ -141,6 +141,11 @@ router.post('/posts/:id/join', async (req, res) => {
         if (!post) return res.status(404).json({ success: false, message: 'Post not found' });
 
         const uid = req.user.id;
+
+        if (post.student.toString() === uid) {
+            return res.status(400).json({ success: false, message: 'You cannot join your own session' });
+        }
+
         const joinedIdx = post.participants.findIndex(p => p._id.toString() === uid);
 
         if (joinedIdx > -1) {

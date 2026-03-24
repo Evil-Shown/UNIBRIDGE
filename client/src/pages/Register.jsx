@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import '../styles/auth.css';
 
 const Register = () => {
     const [formData, setFormData] = useState({ name: '', email: '', password: '', role: 'student' });
@@ -54,57 +55,80 @@ const Register = () => {
     };
 
     return (
-        <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)', padding: '40px 20px' }}>
-            <div className="card" style={{ width: '450px', padding: '40px' }}>
-                <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-                    <div style={{ fontSize: '48px', marginBottom: '8px' }}>🚀</div>
-                    <h1 style={{ color: 'var(--text)', fontSize: '28px', fontWeight: 'bold' }}>Create an Account</h1>
-                    <p style={{ color: 'var(--muted)', fontSize: '15px' }}>Join UniBridge and start exploring</p>
+        <div className="auth-bg">
+            <div className="auth-card">
+                <div className="auth-header">
+                    <div className="auth-logo">🚀</div>
+                    <h1 className="auth-title">Create Account</h1>
+                    <div className="auth-badge">Join UniBridge</div>
                 </div>
-
                 {error && <div className="alert alert-error">{error}</div>}
-
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
                         <label>Full Name</label>
-                        <input type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} placeholder="John Doe" />
+                        <input 
+                            type="text" 
+                            value={formData.name} 
+                            onChange={e => setFormData({...formData, name: e.target.value})} 
+                            placeholder="John Doe"
+                            className={errors.name ? 'error' : ''}
+                        />
                         {errors.name && <span className="error-text">{errors.name}</span>}
                     </div>
-                    
                     <div className="form-group">
                         <label>Email Address</label>
-                        <input type="email" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} placeholder="john@example.com" />
+                        <input 
+                            type="email" 
+                            value={formData.email} 
+                            onChange={e => setFormData({...formData, email: e.target.value})} 
+                            placeholder="john@example.com"
+                            className={errors.email ? 'error' : ''}
+                        />
                         {errors.email && <span className="error-text">{errors.email}</span>}
                     </div>
-                    
                     <div className="form-group">
                         <label>Password</label>
-                        <input type="password" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} placeholder="Minimum 6 characters" />
+                        <input 
+                            type="password" 
+                            value={formData.password} 
+                            onChange={e => setFormData({...formData, password: e.target.value})} 
+                            placeholder="Minimum 6 characters"
+                            className={errors.password ? 'error' : ''}
+                        />
                         {errors.password && <span className="error-text">{errors.password}</span>}
                     </div>
-                    
-                    <div className="form-group" style={{ marginBottom: '32px' }}>
+                    <div className="form-group">
                         <label>I am a...</label>
-                        <div style={{ display: 'flex', gap: '16px', marginTop: '8px' }}>
-                            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 'normal' }}>
-                                <input type="radio" name="role" value="student" checked={formData.role === 'student'} onChange={e => setFormData({...formData, role: e.target.value})} style={{ width: 'auto' }} />
+                        <div className="auth-radio-group">
+                            <label className="auth-radio">
+                                <input 
+                                    type="radio" 
+                                    name="role" 
+                                    value="student" 
+                                    checked={formData.role === 'student'} 
+                                    onChange={e => setFormData({...formData, role: e.target.value})} 
+                                />
                                 Student
                             </label>
-                            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 'normal' }}>
-                                <input type="radio" name="role" value="employer" checked={formData.role === 'employer'} onChange={e => setFormData({...formData, role: e.target.value})} style={{ width: 'auto' }} />
+                            <label className="auth-radio">
+                                <input 
+                                    type="radio" 
+                                    name="role" 
+                                    value="employer" 
+                                    checked={formData.role === 'employer'} 
+                                    onChange={e => setFormData({...formData, role: e.target.value})} 
+                                />
                                 Employer
                             </label>
                         </div>
                     </div>
-                    
-                    <button type="submit" className="btn btn-primary" style={{ width: '100%', marginBottom: '24px', padding: '12px' }} disabled={loading}>
+                    <button type="submit" className="auth-btn auth-btn-primary" disabled={loading}>
                         {loading ? 'Creating Account...' : 'Sign Up'}
                     </button>
-                    
-                    <div style={{ textAlign: 'center', fontSize: '14px', color: 'var(--muted)' }}>
-                        Already have an account? <Link to="/login" style={{ color: 'var(--primary)', textDecoration: 'none', fontWeight: '600' }}>Log in</Link>
-                    </div>
                 </form>
+                <div className="auth-footer">
+                    Already have an account? <Link to="/login">Log in</Link>
+                </div>
             </div>
         </div>
     );

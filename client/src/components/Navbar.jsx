@@ -36,45 +36,78 @@ const Navbar = () => {
         const fetchNotifications = async () => {
             if (!user) return;
             try {
-                let res;
-                try {
-                    res = await axios.get('http://localhost:5000/api/notifications');
+                // Primary endpoint for the unified system
+                const res = await axios.get('http://localhost:5000/api/notifications');
+                if (res.data.success) {
                     setNotifications(res.data.data || []);
                     setUnreadCount(res.data.unreadCount || 0);
-                    return;
-                } catch (legacyErr) {
-                    res = await axios.get('http://localhost:5000/api/uni/notifications');
+                } else {
+                    // Fallback or handle legacy array format if exists
+                    const list = Array.isArray(res.data) ? res.data : [];
+                    setNotifications(list);
+                    setUnreadCount(list.filter(n => !n.isRead).length);
                 }
-                const list = Array.isArray(res.data) ? res.data : [];
-                setNotifications(list);
-                setUnreadCount(list.filter((n) => !n.isRead).length);
             } catch (err) {
-                setNotifications([]);
-                setUnreadCount(0);
+                console.error("Error fetching notifications:", err);
+                // Attempt legacy endpoint if primary fails
+                try {
+                    const resLegacy = await axios.get('http://localhost:5000/api/uni/notifications');
+                    const list = Array.isArray(resLegacy.data) ? resLegacy.data : [];
+                    setNotifications(list);
+                    setUnreadCount(list.filter(n => !n.isRead).length);
+                } catch (legacyErr) {
+                    setNotifications([]);
+                    setUnreadCount(0);
+                }
             }
         };
+        
         fetchNotifications();
+        // Refresh notifications every 60 seconds
+        const interval = setInterval(fetchNotifications, 60000);
+        return () => clearInterval(interval);
     }, [user, location.pathname]);
+
+    // Close notifications panel on click outside
+    useEffect(() => {
+        if (!showNotifications) return;
+        
+        const handleClickOutside = (e) => {
+            if (!e.target.closest('.navbar-notification')) {
+                setShowNotifications(false);
+            }
+        };
+        
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [showNotifications]);
+
+    const markAllAsRead = async (e) => {
+        if (e) e.stopPropagation();
+        if (unreadCount === 0) return;
+        
+        try {
+            await axios.patch('http://localhost:5000/api/notifications/read-all');
+            setUnreadCount(0);
+            setNotifications(notifications.map(n => ({ ...n, isRead: true })));
+        } catch (err) {
+            // Fallback for legacy PUT endpoint
+            try {
+                await axios.put('http://localhost:5000/api/uni/notifications/read-all');
+                setUnreadCount(0);
+                setNotifications(notifications.map(n => ({ ...n, isRead: true })));
+            } catch (innerErr) {
+                console.error("Failed to mark all as read:", innerErr);
+            }
+        }
+    };
 
     const toggleMobileMenu = () => {
         setMobileMenuOpen(!mobileMenuOpen);
     };
 
-    const openNotifications = async () => {
-        setShowNotifications((prev) => !prev);
-        if (unreadCount > 0) {
-            try {
-                try {
-                    await axios.patch('http://localhost:5000/api/notifications/read-all');
-                } catch (legacyErr) {
-                    await axios.put('http://localhost:5000/api/uni/notifications/read-all');
-                }
-                setUnreadCount(0);
-                setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
-            } catch (err) {
-                // no-op
-            }
-        }
+    const toggleNotifications = () => {
+        setShowNotifications(!showNotifications);
     };
 
     return (
@@ -117,21 +150,36 @@ const Navbar = () => {
 
 
                                     <Link to="/student/kuppi" className="navbar-link">Kuppi</Link>
-                                    <div className="navbar-notification" onClick={openNotifications} role="button" tabIndex={0}>
-                                        🔔
+                                    <div className="navbar-notification" onClick={toggleNotifications} role="button" tabIndex={0} title="Notifications">
+                                        <span className="notification-bell-icon">🔔</span>
                                         {unreadCount > 0 && <span className="notification-badge">{unreadCount > 9 ? '9+' : unreadCount}</span>}
                                         {showNotifications && (
-                                            <div className="notification-panel">
-                                                {notifications.length === 0 ? (
-                                                    <div className="notification-item muted">No notifications yet.</div>
-                                                ) : (
-                                                    notifications.slice(0, 8).map((n) => (
-                                                        <div key={n._id} className={`notification-item ${n.isRead ? '' : 'unread'}`}>
-                                                            <strong>{n.title}</strong>
-                                                            <div>{n.message}</div>
-                                                        </div>
-                                                    ))
-                                                )}
+                                            <div className="notification-panel" onClick={(e) => e.stopPropagation()}>
+                                                <div className="notification-header">
+                                                    <h3>Notifications</h3>
+                                                    {unreadCount > 0 && (
+                                                        <button className="mark-all-read" onClick={markAllAsRead}>
+                                                            Mark all as read
+                                                        </button>
+                                                    )}
+                                                </div>
+                                                <div className="notification-list">
+                                                    {notifications.length === 0 ? (
+                                                        <div className="notification-item muted">No notifications yet.</div>
+                                                    ) : (
+                                                        notifications.slice(0, 10).map((n) => (
+                                                            <div key={n._id} className={`notification-item ${n.isRead ? '' : 'unread'}`}>
+                                                                <div className="notification-content">
+                                                                    <strong>{n.title}</strong>
+                                                                    <div className="notification-msg">{n.message}</div>
+                                                                    <div className="notification-time">
+                                                                        {new Date(n.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        ))
+                                                    )}
+                                                </div>
                                             </div>
                                         )}
                                     </div>

@@ -1,0 +1,325 @@
+.prof-profile-page {
+  padding: 100px 24px 60px;
+  background-color: #f8fafc;
+  min-height: 100vh;
+}
+
+.prof-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Header Card */
+.prof-header-card {
+  background: white;
+  border-radius: var(--radius-xl);
+  padding: 40px;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 30px;
+  border: 1px solid #e2e8f0;
+}
+
+.prof-user-info {
+  display: flex;
+  gap: 30px;
+  align-items: center;
+}
+
+.prof-avatar {
+  width: 100px;
+  height: 100px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 36px;
+  font-weight: 800;
+  box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3);
+}
+
+.prof-title-group h1 {
+  font-size: 32px;
+  font-weight: 800;
+  margin-bottom: 8px;
+  color: #1e293b;
+}
+
+.headline-text {
+  color: #64748b;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.prof-contact-meta {
+  margin-top: 15px;
+  font-size: 14px;
+  color: #94a3b8;
+}
+
+/* Status Toggle */
+.status-toggle-card {
+  background: #f1f5f9;
+  padding: 20px;
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 250px;
+}
+
+.status-info strong {
+  display: block;
+  font-size: 16px;
+  color: #1e293b;
+}
+
+.status-info p {
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 4px;
+}
+
+.status-toggle {
+  width: 100%;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: #cbd5e1;
+  color: #475569;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.status-toggle.available {
+  background: #22c55e;
+  color: white;
+  box-shadow: 0 4px 14px 0 rgba(34, 197, 94, 0.39);
+}
+
+/* Layout */
+.prof-main-layout {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 30px;
+}
+
+/* Sidebar */
+.completion-card {
+  background: white;
+  padding: 24px;
+  border-radius: var(--radius-lg);
+  border: 1px solid #e2e8f0;
+  margin-bottom: 24px;
+}
+
+.completion-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.completion-header strong { font-size: 15px; }
+.completion-header span { color: var(--primary); font-weight: 800; }
+
+.progress-bar {
+  height: 8px;
+  background: #f1f5f9;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--primary);
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.completion-card p {
+  font-size: 12px;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+.prof-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.prof-nav-item {
+  padding: 14px 20px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: transparent;
+  color: #64748b;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.prof-nav-item:hover {
+  background: #f1f5f9;
+  color: #1e293b;
+}
+
+.prof-nav-item.active {
+  background: white;
+  color: var(--primary);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  border: 1px solid #e2e8f0;
+}
+
+/* Sections */
+.prof-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.prof-section-card {
+  background: white;
+  border-radius: var(--radius-lg);
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+}
+
+.section-header {
+  padding: 24px 30px;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.title-area {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.section-header h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.not-started-badge {
+  font-size: 11px;
+  padding: 2px 8px;
+  background: #fef2f2;
+  color: #ef4444;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.add-btn {
+  color: var(--primary);
+  background: transparent;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.section-body {
+  padding: 30px;
+}
+
+.empty-hint {
+  color: #94a3b8;
+  font-style: italic;
+  font-size: 14px;
+}
+
+/* Data Display */
+.data-display {
+  padding: 15px;
+  background: #f8fafc;
+  border-radius: var(--radius-md);
+}
+
+.data-item {
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 15px;
+  margin-bottom: 15px;
+}
+
+.data-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.item-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.skill-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.skill-tag {
+  padding: 6px 16px;
+  background: #f1f5f9;
+  color: #475569;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Modal */
+.prof-modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.prof-modal {
+  background: white;
+  width: 100%;
+  max-width: 600px;
+  border-radius: var(--radius-xl);
+  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+  animation: modalPop 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalPop {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.modal-header {
+  padding: 24px 30px;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-body { padding: 30px; }
+.modal-footer { padding: 20px 30px; background: #f8fafc; border-top: 1px solid #f1f5f9; display: flex; justify-content: flex-end; gap: 12px; border-radius: 0 0 24px 24px; }
+
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.form-col label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; }
+.form-col input, .form-col select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; }

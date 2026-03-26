@@ -6,8 +6,17 @@ const { auth, requireRole } = require('../middleware/auth');
 
 router.get('/profile', auth, requireRole('student'), async (req, res) => {
   try {
-    const student = await Student.findOne({ userId: req.user._id });
-    if (!student) return res.status(404).json({ message: 'Profile not found' });
+    let student = await Student.findOne({ userId: req.user._id });
+    if (!student) {
+      // Create a default profile if it doesn't exist
+      const nameParts = req.user.name ? req.user.name.split(' ') : ['Student', ''];
+      student = await Student.create({
+        userId: req.user._id,
+        firstName: nameParts[0] || 'Student',
+        lastName: nameParts.slice(1).join(' ') || 'User',
+        email: req.user.email
+      });
+    }
     res.json(student);
   } catch (error) {
     res.status(500).json({ message: error.message });

@@ -5,13 +5,55 @@ const studentSchema = new mongoose.Schema({
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
   phone: { type: String, default: '' },
-  education: { type: String, default: '' },
-  major: { type: String, default: '' },
-  graduationYear: { type: Number },
+  
+  // Enhanced Profile Fields
+  isAvailable: { type: Boolean, default: false },
+  profileHeadline: { type: String, default: '' },
+  
+  education: [{
+    institution: String,
+    degree: String,
+    fieldOfStudy: String,
+    startDate: Date,
+    endDate: Date,
+    current: { type: Boolean, default: false },
+    description: String
+  }],
+  
+  targetJob: {
+    title: String,
+    jobType: { type: String, enum: ['Full-time', 'Part-time', 'Internship', 'Contract', ''] },
+    location: String,
+    expectedSalary: String
+  },
+  
+  workExperience: [{
+    company: String,
+    role: String,
+    location: String,
+    startDate: Date,
+    endDate: Date,
+    current: { type: Boolean, default: false },
+    description: String
+  }],
+  
   skills: [{ type: String }],
+  
+  languages: [{
+    language: String,
+    proficiency: { type: String, enum: ['Elementary', 'Limited Working', 'Professional Working', 'Full Professional', 'Native/Bilingual', ''] }
+  }],
+  
+  otherAssets: [{
+    type: { type: String }, // e.g., 'Portfolio', 'GitHub', 'LinkedIn'
+    url: String,
+    description: String
+  }],
+  
   bio: { type: String, default: '' },
   linkedin: { type: String, default: '' },
   portfolio: { type: String, default: '' },
+  
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 });

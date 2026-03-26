@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
+import { FaBell, FaChevronDown, FaUserCircle, FaCog, FaSignOutAlt, FaBriefcase } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 import './Navbar.css';
 
@@ -13,6 +14,9 @@ const Navbar = () => {
     const [showNotifications, setShowNotifications] = useState(false);
     const [notifications, setNotifications] = useState([]);
     const [unreadCount, setUnreadCount] = useState(0);
+    const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+    const notificationRef = useRef(null);
+    const profileRef = useRef(null);
 
     // Handle scroll effect for navbar background
     useEffect(() => {
@@ -68,19 +72,19 @@ const Navbar = () => {
         return () => clearInterval(interval);
     }, [user, location.pathname]);
 
-    // Close notifications panel on click outside
+    // Close notifications panel and profile dropdown on click outside
     useEffect(() => {
-        if (!showNotifications) return;
-        
-        const handleClickOutside = (e) => {
-            if (!e.target.closest('.navbar-notification')) {
+        const handleClickOutside = (event) => {
+            if (notificationRef.current && !notificationRef.current.contains(event.target)) {
                 setShowNotifications(false);
             }
+            if (profileRef.current && !profileRef.current.contains(event.target)) {
+                setShowProfileDropdown(false);
+            }
         };
-        
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, [showNotifications]);
+    }, []);
 
     const markAllAsRead = async (e) => {
         if (e) e.stopPropagation();
@@ -150,7 +154,7 @@ const Navbar = () => {
 
 
                                     <Link to="/student/kuppi" className="navbar-link">Kuppi</Link>
-                                    <div className="navbar-notification" onClick={toggleNotifications} role="button" tabIndex={0} title="Notifications">
+                                    <div className="navbar-notification" onClick={toggleNotifications} role="button" tabIndex={0} title="Notifications" ref={notificationRef}>
                                         <span className="notification-bell-icon">🔔</span>
                                         {unreadCount > 0 && <span className="notification-badge">{unreadCount > 9 ? '9+' : unreadCount}</span>}
                                         {showNotifications && (
@@ -190,17 +194,37 @@ const Navbar = () => {
                                     <Link to="/employer/jobs/create" className="navbar-link">Post Job</Link>
                                 </>
                             )}
-                            <button
-                                onClick={() => navigate(user?.role === 'student' ? '/student/home' : user?.role === 'employer' ? '/employer/dashboard' : '/admin/dashboard')}
-                                className="profile-btn"
-                                title="Go to Dashboard"
-                            >
-                                <div className="profile-avatar">
-                                    {user?.name?.charAt(0).toUpperCase() || 'U'}
-                                </div>
-                                <span>{user?.name?.split(' ')[0] || 'Profile'}</span>
-                            </button>
-                            <button onClick={logout} className="btn btn-outline" style={{marginLeft: '12px'}}>Logout</button>
+                            {/* Profile Dropdown */}
+                            <div className="profile-dropdown-container" ref={profileRef}>
+                                <button
+                                    onClick={() => setShowProfileDropdown(!showProfileDropdown)}
+                                    className="profile-btn"
+                                    title="Profile Menu"
+                                >
+                                    <div className="profile-avatar">
+                                        {user?.name?.charAt(0).toUpperCase() || 'U'}
+                                    </div>
+                                    <span className="profile-name-nav">{user?.name?.split(' ')[0]}</span>
+                                    <FaChevronDown style={{ fontSize: '10px', opacity: 0.5 }} />
+                                </button>
+
+                                {showProfileDropdown && (
+                                    <div className="profile-dropdown-menu">
+                                        {user?.role === 'student' && (
+                                            <button className="profile-dropdown-item" onClick={() => { navigate('/student/profile/professional'); setShowProfileDropdown(false); }}>
+                                                <FaBriefcase /> Professional Profile
+                                            </button>
+                                        )}
+                                        <button className="profile-dropdown-item" onClick={() => { navigate('/profile'); setShowProfileDropdown(false); }}>
+                                            <FaUserCircle /> Account Settings
+                                        </button>
+                                        <div className="dropdown-divider"></div>
+                                        <button className="profile-dropdown-item" style={{ color: 'var(--danger)' }} onClick={() => { logout(); setShowProfileDropdown(false); }}>
+                                            <FaSignOutAlt /> Logout
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
                         </>
                     )}
                 </div>

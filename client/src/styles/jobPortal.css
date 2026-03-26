@@ -4,12 +4,58 @@
 /* Hero */
 .jp-hero {
   text-align: center;
-  padding: 48px 24px 40px;
+  padding: 60px 24px 40px;
   margin-bottom: 48px;
   background: linear-gradient(135deg, rgba(79,70,229,0.08) 0%, rgba(236,72,153,0.06) 100%);
   border-radius: var(--radius-lg);
   position: relative;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Company Marquee */
+.jp-marquee-wrapper {
+  width: 100%;
+  overflow: hidden;
+  margin-bottom: 30px;
+  position: relative;
+  mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+}
+
+.jp-marquee-content {
+  display: flex;
+  gap: 40px;
+  width: max-content;
+  animation: marquee 30s linear infinite;
+}
+
+.jp-marquee-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-muted);
+  opacity: 0.7;
+  transition: opacity 0.3s;
+}
+
+.jp-marquee-item:hover {
+  opacity: 1;
+  color: var(--primary);
+}
+
+.marquee-logo {
+  font-size: 20px;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 .jp-hero::before {
   content: '';
@@ -23,7 +69,12 @@
   font-size: 42px; font-weight: 800; font-family: 'Outfit', sans-serif;
   margin-bottom: 12px; line-height: 1.15;
 }
-.jp-hero h1 span { background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.jp-hero h1 span { 
+  background: linear-gradient(135deg, var(--primary), var(--secondary)); 
+  -webkit-background-clip: text; 
+  background-clip: text;
+  -webkit-text-fill-color: transparent; 
+}
 .jp-hero p { color: var(--text-muted); font-size: 17px; max-width: 600px; margin: 0 auto 28px; }
 
 /* Search Bar */
@@ -99,7 +150,11 @@
 .jp-card-desc {
   font-size: 14px; color: var(--text-muted); line-height: 1.6;
   flex-grow: 1; margin-bottom: 20px;
-  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+  display: -webkit-box; 
+  -webkit-line-clamp: 3; 
+  line-clamp: 3;
+  -webkit-box-orient: vertical; 
+  overflow: hidden;
 }
 
 .jp-card-skills {

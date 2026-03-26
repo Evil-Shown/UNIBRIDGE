@@ -16,6 +16,39 @@ const iconMap = {
   banking: FaCoins, education: FaGraduationCap, hr: FaUsers,
 };
 
+const CompanyMarquee = () => {
+    const companies = [
+        { name: 'Dialog Axiata', icon: '📶' },
+        { name: 'SLT-MOBITEL', icon: '📞' },
+        { name: 'WSO2', icon: '⚡' },
+        { name: 'IFS', icon: '🏢' },
+        { name: 'Virtusa', icon: '🌐' },
+        { name: 'HNB', icon: '🏦' },
+        { name: 'DFCC Bank', icon: '💰' },
+        { name: 'Sysco LABS', icon: '🍔' },
+        { name: 'PickMe', icon: '🚕' },
+        { name: '99x', icon: '🚀' },
+        { name: 'Pearson', icon: '📚' },
+        { name: 'Brandix', icon: '👕' }
+    ];
+
+    // Duplicate list for seamless loop
+    const combined = [...companies, ...companies];
+
+    return (
+        <div className="jp-marquee-wrapper">
+            <div className="jp-marquee-content">
+                {combined.map((c, idx) => (
+                    <div key={idx} className="jp-marquee-item">
+                        <span className="marquee-logo">{c.icon}</span>
+                        <span>{c.name}</span>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+};
+
 const JobPortal = () => {
   const { jobs, jobsLoading, jobsError, isJobSaved, saveJob, unsaveJob } = useJobs();
   const navigate = useNavigate();
@@ -61,6 +94,7 @@ const JobPortal = () => {
     <div className="jp-home fade-in-up">
       {/* Hero */}
       <section className="jp-hero">
+        <CompanyMarquee />
         <h1>Find Your <span>Dream Job</span></h1>
         <p>Discover internships, graduate roles, and career opportunities curated for university students.</p>
         <form className="jp-search-bar" onSubmit={handleSearch}>

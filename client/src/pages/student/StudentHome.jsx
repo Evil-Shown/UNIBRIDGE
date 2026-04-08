@@ -100,12 +100,35 @@ function Hero({ user, navigate }) {
       <p className="hero-subtitle">
         Your launchpad for materials, opportunities, and peer learning — all in one place.
       </p>
-      <div style={{ marginTop: '24px' }}>
-        <button className="btn btn-outline" onClick={() => navigate('/profile')} style={{ background: 'var(--bg-card)' }}>
-          <span style={{ marginRight: '8px' }}>⚙️</span> Account Settings
-        </button>
-      </div>
     </section>
+  );
+}
+
+function ProfileSnapshot({ user, navigate }) {
+  const fullName = user?.name || 'Student User';
+  const firstLetter = fullName.charAt(0).toUpperCase();
+
+  return (
+    <aside className="profile-snapshot fade-in-up">
+      <div className="snapshot-avatar">{firstLetter}</div>
+      <h3>{fullName}</h3>
+      <p>{user?.email || 'student@unibridge.lk'}</p>
+
+      <div className="snapshot-progress-block">
+        <div className="snapshot-progress-head">
+          <span>Profile completion</span>
+          <strong>72%</strong>
+        </div>
+        <div className="snapshot-progress-track">
+          <div className="snapshot-progress-fill" style={{ width: '72%' }}></div>
+        </div>
+      </div>
+
+      <div className="snapshot-quick-actions">
+        <button type="button" onClick={() => navigate('/student/profile/professional')}>Professional Profile</button>
+        <button type="button" onClick={() => navigate('/student/job-portal/applications')}>My Applications</button>
+      </div>
+    </aside>
   );
 }
 
@@ -123,11 +146,17 @@ function StatCard({ icon, value, label, delay }) {
 
 function StatGrid({ stats }) {
   return (
-    <div className="stats-grid">
+    <section className="dashboard-section">
+      <div className="section-title-wrap">
+        <h2>Overview</h2>
+        <p>Your learning and career activity at a glance.</p>
+      </div>
+      <div className="stats-grid">
       {stats.map((stat, idx) => (
         <StatCard key={stat.label} {...stat} delay={idx + 1} />
       ))}
-    </div>
+      </div>
+    </section>
   );
 }
 
@@ -154,11 +183,17 @@ function FeatureCard({ icon, title, desc, label, path, accent, delay, navigate }
 
 function FeatureGrid({ features, navigate }) {
   return (
-    <div className="features-grid">
+    <section className="dashboard-section">
+      <div className="section-title-wrap">
+        <h2>Explore UniBridge</h2>
+        <p>Jump into the tools you use every day.</p>
+      </div>
+      <div className="features-grid">
       {features.map((feat, idx) => (
         <FeatureCard key={feat.title} {...feat} delay={idx + 1} navigate={navigate} />
       ))}
-    </div>
+      </div>
+    </section>
   );
 }
 
@@ -235,7 +270,10 @@ const StudentHome = () => {
       <ParticleCanvas />
       <div className="student-dashboard">
         <div className="container">
-          <Hero user={user} navigate={navigate} />
+          <div className="dashboard-top-grid">
+            <Hero user={user} navigate={navigate} />
+            <ProfileSnapshot user={user} navigate={navigate} />
+          </div>
           <StatGrid stats={stats} />
           <FeatureGrid features={features} navigate={navigate} />
           <RecentActivity activities={recentActivity} navigate={navigate} />

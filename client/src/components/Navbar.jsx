@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
-import { FaBell, FaChevronDown, FaUserCircle, FaCog, FaSignOutAlt, FaBriefcase } from 'react-icons/fa';
+import { FaBell, FaChevronDown, FaUserCircle, FaCog, FaSignOutAlt, FaBriefcase, FaHome } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 import './Navbar.css';
 
@@ -119,6 +119,10 @@ const Navbar = () => {
         navigate('/student/notifications');
     };
 
+    const handleProfileButtonClick = () => {
+        setShowProfileDropdown(!showProfileDropdown);
+    };
+
     return (
         <nav className={`navbar-marvel ${scrolled ? 'navbar-scrolled' : ''}`}>
             <div className="navbar-container">
@@ -208,7 +212,7 @@ const Navbar = () => {
                             {/* Profile Dropdown */}
                             <div className="profile-dropdown-container" ref={profileRef}>
                                 <button
-                                    onClick={() => setShowProfileDropdown(!showProfileDropdown)}
+                                    onClick={handleProfileButtonClick}
                                     className="profile-btn"
                                     title="Profile Menu"
                                 >
@@ -221,6 +225,11 @@ const Navbar = () => {
 
                                 {showProfileDropdown && (
                                     <div className="profile-dropdown-menu">
+                                        {user?.role === 'student' && (
+                                            <button className="profile-dropdown-item" onClick={() => { navigate('/student/home'); setShowProfileDropdown(false); }}>
+                                                <FaHome /> UserDashboard
+                                            </button>
+                                        )}
                                         {user?.role === 'student' && (
                                             <button className="profile-dropdown-item" onClick={() => { navigate('/student/profile/professional'); setShowProfileDropdown(false); }}>
                                                 <FaBriefcase /> Professional Profile

@@ -1,3 +1,5 @@
+/* professionalProfile.css - Light Theme with Detailed Modals */
+
 .prof-profile-page {
   padding: 100px 24px 60px;
   background-color: #f8fafc;
@@ -40,6 +42,7 @@
   font-size: 36px;
   font-weight: 800;
   box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3);
+  overflow: hidden;
 }
 
 .prof-title-group h1 {
@@ -61,6 +64,8 @@
   margin-top: 15px;
   font-size: 14px;
   color: #94a3b8;
+  display: flex;
+  gap: 20px;
 }
 
 /* Status Toggle */
@@ -143,12 +148,6 @@
   transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.completion-card p {
-  font-size: 12px;
-  color: #64748b;
-  line-height: 1.5;
-}
-
 .prof-nav {
   display: flex;
   flex-direction: column;
@@ -199,6 +198,10 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  opacity: 1;
+  transform: none;
+  margin-bottom: 0;
+  text-align: left;
 }
 
 .title-area {
@@ -225,12 +228,20 @@
 .add-btn {
   color: var(--primary);
   background: transparent;
-  border: none;
+  border: 1px solid var(--primary);
+  padding: 6px 12px;
+  border-radius: 8px;
   font-weight: 700;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 6px;
+  transition: all 0.2s;
+}
+
+.add-btn:hover {
+  background: var(--primary);
+  color: white;
 }
 
 .section-body {
@@ -248,6 +259,7 @@
   padding: 15px;
   background: #f8fafc;
   border-radius: var(--radius-md);
+  margin-bottom: 10px;
 }
 
 .data-item {
@@ -283,12 +295,12 @@
   font-weight: 600;
 }
 
-/* Modal */
+/* Detailed Modal Styles */
 .prof-modal-overlay {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(15, 23, 42, 0.5);
-  backdrop-filter: blur(4px);
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(8px);
   z-index: 2000;
   display: flex;
   align-items: center;
@@ -298,15 +310,17 @@
 .prof-modal {
   background: white;
   width: 100%;
-  max-width: 600px;
-  border-radius: var(--radius-xl);
-  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
-  animation: modalPop 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  max-width: 650px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 24px;
+  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.15);
+  animation: modalIn 0.3s ease-out;
 }
 
-@keyframes modalPop {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .modal-header {
@@ -314,12 +328,233 @@
   border-bottom: 1px solid #f1f5f9;
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
 }
 
-.modal-body { padding: 30px; }
-.modal-footer { padding: 20px 30px; background: #f8fafc; border-top: 1px solid #f1f5f9; display: flex; justify-content: flex-end; gap: 12px; border-radius: 0 0 24px 24px; }
+.modal-header h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #0f172a;
+}
 
-.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-.form-col label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; }
-.form-col input, .form-col select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; }
+.modal-header p {
+  font-size: 14px;
+  color: #64748b;
+  margin-top: 4px;
+}
+
+.close-btn {
+  background: #f1f5f9;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #64748b;
+  transition: all 0.2s;
+}
+
+.close-btn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.modal-body {
+  padding: 30px;
+}
+
+.modal-footer {
+  padding: 20px 30px;
+  background: #f8fafc;
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  border-bottom-left-radius: 24px;
+  border-bottom-right-radius: 24px;
+}
+
+/* Form Layouts within Modals */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group.full-width {
+  grid-column: span 2;
+}
+
+.form-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 8px;
+}
+
+.form-group input, 
+.form-group select, 
+.form-group textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.form-group input:focus, 
+.form-group select:focus, 
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-primary:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: white;
+  color: #64748b;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-weight: 600;
+  border: 1px solid #e2e8f0;
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  background: #f8fafc;
+}
+
+.btn-danger {
+  background: #ef4444;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.btn-danger:hover {
+  background: #dc2626;
+}
+
+/* Profile Picture Upload */
+.profile-picture-upload {
+  border: 2px dashed #e2e8f0;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.profile-picture-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.profile-picture-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.upload-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  color: #64748b;
+}
+
+.upload-placeholder p {
+  font-weight: 600;
+  margin: 0;
+}
+
+.upload-placeholder small {
+  font-size: 14px;
+  margin: 0;
+}
+
+/* Gender Options */
+.gender-options {
+  display: flex;
+  gap: 20px;
+}
+
+.radio-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.radio-option input[type="radio"] {
+  accent-color: var(--primary);
+}
+
+/* Other Assets */
+.other-assets-links {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.asset-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #1e293b;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.asset-link:hover {
+  background: #e2e8f0;
+  transform: translateY(-1px);
+}
+
+.asset-link svg {
+  color: var(--primary);
+}
+
+/* Form Help Text */
+.form-help {
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 4px;
+  display: block;
+}

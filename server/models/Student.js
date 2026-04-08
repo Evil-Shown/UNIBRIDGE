@@ -4,73 +4,60 @@ const studentSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, unique: true },
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
+  email: { type: String, required: true },
   phone: { type: String, default: '' },
+  birthDate: { type: String, default: '' },
+  currentPosition: { type: String, default: '' },
+  gender: { type: String, default: '' },
+  profilePicture: { type: String, default: null }, // Base64 or URL
+  profilePictureName: { type: String, default: '' },
   
-  // Enhanced Profile Fields
+  // Enhanced Profile completion fields
   isAvailable: { type: Boolean, default: false },
-  profileHeadline: { type: String, default: '' },
-  
-  // Academic Profile
-  university: { type: String, default: '' },
-  degree: { type: String, default: '' },
-  year: { type: String, default: '' },
-  department: { type: String, default: '' },
-  
-  education: [{
-    institution: String,
-    degree: String,
-    fieldOfStudy: String,
-    startDate: Date,
-    endDate: Date,
-    current: { type: Boolean, default: false },
-    description: String
-  }],
   
   targetJob: {
-    title: String,
-    jobType: { type: String, enum: ['Full-time', 'Part-time', 'Internship', 'Contract', ''] },
-    location: String,
-    expectedSalary: String
+    jobTitle: { type: String, default: '' },
+    desiredLocation: { type: String, default: '' },
+    contractType: { type: String, default: '' },
+    remoteWork: { type: String, default: '' },
+    experienceLevel: { type: String, default: '' },
+    minimumSalary: { type: String, default: '' },
+    currency: { type: String, default: 'LKR' },
+    summary: { type: String, default: '' }
   },
-  
-  workExperience: [{
-    company: String,
-    role: String,
-    location: String,
-    startDate: Date,
-    endDate: Date,
-    current: { type: Boolean, default: false },
-    description: String
+
+  workExperiences: [{
+    id: { type: String },
+    jobTitle: { type: String, default: '' },
+    companyName: { type: String, default: '' },
+    employmentType: { type: String, default: '' },
+    location: { type: String, default: '' },
+    startDate: { type: String, default: '' },
+    endDate: { type: String, default: '' },
+    currentlyWorking: { type: Boolean, default: false },
+    description: { type: String, default: '' }
   }],
-  
+
   skills: [{ type: String }],
   
-  languages: [{
-    language: String,
-    proficiency: { type: String, enum: ['Elementary', 'Limited Working', 'Professional Working', 'Full Professional', 'Native/Bilingual', ''] }
+  languages: [{ type: String }],
+
+  educationItems: [{
+    id: { type: String },
+    title: { type: String, default: '' },
+    level: { type: String, default: '' },
+    institution: { type: String, default: '' },
+    fromDate: { type: String, default: '' },
+    toDate: { type: String, default: '' },
+    currentlyStudying: { type: Boolean, default: false },
+    projectsInvolved: { type: String, default: '' }
   }],
-  
-  otherAssets: [{
-    type: { type: String }, // e.g., 'Portfolio', 'GitHub', 'LinkedIn'
-    url: String,
-    description: String
-  }],
-  
-  bio: { type: String, default: '' },
-  linkedin: { type: String, default: '' },
-  portfolio: { type: String, default: '' },
-  
-  projects: [{
-    title: String,
-    description: String,
-    link: String
-  }],
-  
-  certifications: [{
-    name: String,
-    issuer: String,
-    date: Date
-  }],
+
+  otherAssets: {
+    linkedin: { type: String, default: '' },
+    github: { type: String, default: '' },
+    website: { type: String, default: '' }
+  },
   
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }

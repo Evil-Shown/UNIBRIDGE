@@ -43,6 +43,7 @@
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 20px;
+  --radius-xl: 24px;
   --radius-full: 9999px;
 
   /* Transitions */
@@ -463,6 +464,7 @@ table tr:hover td {
 .page-header h1 {
   font-size: 36px;
   background: linear-gradient(135deg, var(--text-main), var(--primary));
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }

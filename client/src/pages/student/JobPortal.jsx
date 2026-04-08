@@ -85,9 +85,12 @@ const JobPortal = () => {
     navigate(`/student/job-portal/all?keyword=${encodeURIComponent(keyword)}&location=${encodeURIComponent(locationFilter)}`);
   };
 
-  const toggleSave = (job) => {
-    if (isJobSaved(job.id)) unsaveJob(job.id);
-    else saveJob(job);
+  const toggleSave = async (job) => {
+    if (isJobSaved(job.id)) {
+      await unsaveJob(job.id);
+      return;
+    }
+    await saveJob(job);
   };
 
   return (
@@ -155,21 +158,21 @@ const JobPortal = () => {
       )}
 
       {/* Categories */}
-      <section style={{ marginTop: 56 }}>
+      <section className="jp-categories-section">
         <div className="jp-section-header">
           <h2>Browse by <span>Category</span></h2>
         </div>
-        <div className="jp-featured-grid">
+        <div className="jp-category-grid">
           {categories.map(cat => {
             const Icon = iconMap[cat.accent] || FaProjectDiagram;
             return (
-              <Link key={cat.slug} to={`/student/job-portal/categories/${cat.slug}`} className="jp-job-card" style={{ textDecoration: 'none', flexDirection: 'row', alignItems: 'center', gap: 20, padding: 24 }}>
-                <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'var(--primary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <Icon style={{ fontSize: 24, color: 'var(--primary)' }} />
+              <Link key={cat.slug} to={`/student/job-portal/categories/${cat.slug}`} className="jp-category-card">
+                <div className="jp-category-icon-wrap">
+                  <Icon className="jp-category-icon" />
                 </div>
-                <div>
-                  <div className="jp-card-title" style={{ fontSize: 16, marginBottom: 4 }}>{cat.name}</div>
-                  <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>{cat.count} Job{cat.count !== 1 ? 's' : ''} Available</div>
+                <div className="jp-category-content">
+                  <div className="jp-category-title">{cat.name}</div>
+                  <div className="jp-category-count">{cat.count} Job{cat.count !== 1 ? 's' : ''} Available</div>
                 </div>
               </Link>
             );

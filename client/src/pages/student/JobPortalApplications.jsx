@@ -1,12 +1,10 @@
 import "./ApplicationsPage.css";
 import { useMemo, useState } from "react";
 import {
-  FaArrowLeft,
   FaSearch,
   FaFileAlt,
   FaTrashAlt,
 } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
 import { useJobs } from "../../context/JobsContext";
 
 function formatDate(value) {
@@ -29,7 +27,6 @@ function StatusBadge({ status }) {
 }
 
 export default function JobPortalApplications() {
-  const navigate = useNavigate();
   const { applications, applicationsLoading, removeApplication } = useJobs();
   const [searchValue, setSearchValue] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
@@ -199,17 +196,6 @@ export default function JobPortalApplications() {
             </table>
           </div>
         </section>
-
-        <div className="applications-bottom-actions">
-          <button
-            type="button"
-            className="applications-return-home-btn"
-            onClick={() => navigate("/")}
-          >
-            <FaArrowLeft />
-            <span>Return to home</span>
-          </button>
-        </div>
       </div>
     </div>
   );

@@ -5,8 +5,10 @@ import {
   FaMapMarkerAlt,
   FaChevronDown,
   FaRegClock,
-  FaHome,
+  FaBookmark,
+  FaRegBookmark,
 } from "react-icons/fa";
+import { useJobs } from "../../context/JobsContext";
 import { getJobs } from "../../services/api";
 import {
   getPortalCategoryBySlug,
@@ -24,8 +26,34 @@ const initialFilters = {
   postedWithin: "",
 };
 
+const pickFirstValue = (obj, keys) => {
+  for (const key of keys) {
+    const value = obj?.[key];
+    if (value !== undefined && value !== null && String(value).trim() !== "") {
+      return value;
+    }
+  }
+  return "";
+};
+
+const formatDateLabel = (value) => {
+  if (!value) return "Recently posted";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Recently posted";
+  return date.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+};
+
+const FALLBACK_JOB_TYPES = ["Internship", "Graduate Role", "Full-time", "Part-time"];
+const FALLBACK_EXPERIENCE = ["Fresh Graduate", "0 - 1 year", "1 - 2 years"];
+const FALLBACK_WORK_MODES = ["On-site", "Hybrid", "Remote"];
+
 function JobPortalCategory() {
   const { slug } = useParams();
+  const { isJobSaved, saveJob, unsaveJob } = useJobs();
   const [filters, setFilters] = useState(initialFilters);
   const [jobs, setJobs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -36,7 +64,7 @@ function JobPortalCategory() {
     const fetchJobs = async () => {
       try {
         const response = await getJobs();
-        const fetchedJobs = response.data || [];
+        const fetchedJobs = response.data?.data || response.data || [];
         setJobs(fetchedJobs);
       } catch (error) {
         console.error("Failed to fetch jobs:", error);
@@ -52,21 +80,56 @@ function JobPortalCategory() {
     return jobs.filter((job) => mapJobToPortalCategory(job) === slug);
   }, [jobs, slug]);
 
+  const normalizedCategoryJobs = useMemo(() => {
+    return categoryJobs.map((job) => ({
+      ...job,
+      type: pickFirstValue(job, ["type", "jobType", "employmentType"]),
+      experience: pickFirstValue(job, ["experience", "careerLevel", "experienceLevel"]),
+      workMode: pickFirstValue(job, ["workMode", "mode", "remoteWork"]),
+      location: pickFirstValue(job, ["location", "venue", "city"]),
+    }));
+  }, [categoryJobs]);
+
   const filteredJobs = useMemo(() => {
-    return filterJobs(categoryJobs, filters);
-  }, [categoryJobs, filters]);
+    const baseFiltered = filterJobs(normalizedCategoryJobs, filters);
+
+    if (!filters.postedWithin) {
+      return baseFiltered;
+    }
+
+    const days = Number(filters.postedWithin);
+    if (!days || Number.isNaN(days)) {
+      return baseFiltered;
+    }
+
+    const now = new Date();
+    const threshold = new Date(now);
+    threshold.setDate(now.getDate() - days);
+
+    return baseFiltered.filter((job) => {
+      const rawDate = job.createdAt || job.postedDate || job.deadline;
+      if (!rawDate) return false;
+      const date = new Date(rawDate);
+      if (Number.isNaN(date.getTime())) return false;
+      return date >= threshold;
+    });
+  }, [normalizedCategoryJobs, filters]);
 
   const uniqueJobTypes = useMemo(() => {
-    return [...new Set(jobs.map((job) => job.type).filter(Boolean))];
-  }, [jobs]);
+    return [...new Set(normalizedCategoryJobs.map((job) => job.type).filter(Boolean))];
+  }, [normalizedCategoryJobs]);
 
   const uniqueExperiences = useMemo(() => {
-    return [...new Set(jobs.map((job) => job.experience).filter(Boolean))];
-  }, [jobs]);
+    return [...new Set(normalizedCategoryJobs.map((job) => job.experience).filter(Boolean))];
+  }, [normalizedCategoryJobs]);
 
   const uniqueWorkModes = useMemo(() => {
-    return [...new Set(jobs.map((job) => job.workMode).filter(Boolean))];
-  }, [jobs]);
+    return [...new Set(normalizedCategoryJobs.map((job) => job.workMode).filter(Boolean))];
+  }, [normalizedCategoryJobs]);
+
+  const selectableJobTypes = uniqueJobTypes.length > 0 ? uniqueJobTypes : FALLBACK_JOB_TYPES;
+  const selectableExperiences = uniqueExperiences.length > 0 ? uniqueExperiences : FALLBACK_EXPERIENCE;
+  const selectableWorkModes = uniqueWorkModes.length > 0 ? uniqueWorkModes : FALLBACK_WORK_MODES;
 
   const handleChange = (key, value) => {
     setFilters((prev) => ({
@@ -77,6 +140,18 @@ function JobPortalCategory() {
 
   const handleReset = () => {
     setFilters(initialFilters);
+  };
+
+  const toggleSave = async (job) => {
+    const jobId = job._id || job.id;
+    if (!jobId) return;
+
+    if (isJobSaved(jobId)) {
+      await unsaveJob(jobId);
+      return;
+    }
+
+    await saveJob(job);
   };
 
   if (isLoading) {
@@ -111,14 +186,10 @@ function JobPortalCategory() {
     <div className="category-page">
       <section className="category-page-header">
         <div className="category-page-container">
-          <div className="category-page-topbar">
-            <Link to="/" className="category-home-link">
-              <FaHome />
-              <span>Back to Home</span>
-            </Link>
-          </div>
-
           <h1>Available Jobs</h1>
+          <p className="category-subtitle">
+            {category?.name || "Category"} opportunities tailored for students and recent graduates.
+          </p>
 
           <div className="category-search-row">
             <div className="category-search-box">
@@ -166,7 +237,7 @@ function JobPortalCategory() {
                 onChange={(e) => handleChange("jobType", e.target.value)}
               >
                 <option value="">Job Type</option>
-                {uniqueJobTypes.map((type) => (
+                {selectableJobTypes.map((type) => (
                   <option key={type} value={type}>
                     {type}
                   </option>
@@ -181,7 +252,7 @@ function JobPortalCategory() {
                 onChange={(e) => handleChange("experience", e.target.value)}
               >
                 <option value="">Career Level</option>
-                {uniqueExperiences.map((experience) => (
+                {selectableExperiences.map((experience) => (
                   <option key={experience} value={experience}>
                     {experience}
                   </option>
@@ -196,7 +267,7 @@ function JobPortalCategory() {
                 onChange={(e) => handleChange("workMode", e.target.value)}
               >
                 <option value="">Work Mode</option>
-                {uniqueWorkModes.map((mode) => (
+                {selectableWorkModes.map((mode) => (
                   <option key={mode} value={mode}>
                     {mode}
                   </option>
@@ -234,10 +305,25 @@ function JobPortalCategory() {
                   <div className="category-job-top">
                     <div className="category-deadline">
                       <FaRegClock />
-                      <span>{job.deadline}</span>
+                      <span>{formatDateLabel(job.postedDate || job.createdAt || job.deadline)}</span>
                     </div>
 
-                    <span className="category-type-badge">{job.type}</span>
+                    <div className="category-top-actions">
+                      <span
+                        className={`category-type-badge ${String(job.type || "Open").toLowerCase() === "open" ? "open" : ""}`}
+                      >
+                        {job.type || "Open"}
+                      </span>
+                      <button
+                        type="button"
+                        className={`category-save-btn ${isJobSaved(job._id || job.id) ? "saved" : ""}`}
+                        onClick={() => toggleSave(job)}
+                        aria-label={isJobSaved(job._id || job.id) ? "Unsave job" : "Save job"}
+                        title={isJobSaved(job._id || job.id) ? "Unsave job" : "Save job"}
+                      >
+                        {isJobSaved(job._id || job.id) ? <FaBookmark /> : <FaRegBookmark />}
+                      </button>
+                    </div>
                   </div>
 
                   <div className="category-job-body">

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import {
   FaMapMarkerAlt,
   FaCalendarAlt,
@@ -7,7 +7,6 @@ import {
   FaRegBookmark,
   FaCheckCircle,
   FaTimes,
-  FaHome,
 } from "react-icons/fa";
 import { useJobs } from "../../context/JobsContext";
 import "../../styles/jobPortalDetail.css";
@@ -100,14 +99,7 @@ function JobPortalDetail() {
     return (
       <div className="job-detail-page">
         <section className="job-top-banner">
-          <div className="job-detail-container banner-inner">
-            <div className="banner-top-row">
-              <Link to="/" className="back-home-btn on-banner">
-                <FaHome />
-                <span>Back to Home</span>
-              </Link>
-            </div>
-          </div>
+          <div className="job-detail-container banner-inner"></div>
         </section>
 
         <div className="job-detail-container">
@@ -169,13 +161,6 @@ function JobPortalDetail() {
     <div className="job-detail-page">
       <section className="job-top-banner">
         <div className="job-detail-container banner-inner">
-          <div className="banner-top-row">
-            <Link to="/" className="back-home-btn on-banner">
-              <FaHome />
-              <span>Back to Home</span>
-            </Link>
-          </div>
-
           <div className="banner-left">
             <h1>{job.title}</h1>
             <h2>{job.company}</h2>

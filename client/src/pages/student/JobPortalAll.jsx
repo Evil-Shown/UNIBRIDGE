@@ -70,7 +70,9 @@ const JobPortalAll = () => {
           {filteredJobs.map(job => (
             <div key={job.id} className="jp-job-card">
               <div className="jp-card-top">
-                <span className="jp-card-badge">{job.type || job.status}</span>
+                <span className={`jp-card-badge ${String(job.type || job.status || '').toLowerCase() === 'open' ? 'open' : ''}`}>
+                  {job.type || job.status}
+                </span>
                 <button className={`jp-save-btn ${isJobSaved(job.id) ? 'saved' : ''}`} onClick={() => toggleSave(job)}>
                   {isJobSaved(job.id) ? <FaBookmark /> : <FaRegBookmark />}
                 </button>

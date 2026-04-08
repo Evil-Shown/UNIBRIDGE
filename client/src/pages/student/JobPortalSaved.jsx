@@ -1,7 +1,6 @@
 import "./SavedJobsPage.css";
 import { useMemo, useState } from "react";
 import {
-  FaArrowLeft,
   FaBookmark,
   FaCheckCircle,
   FaRegSquare,
@@ -11,7 +10,7 @@ import {
   FaMapMarkerAlt,
   FaClock,
 } from "react-icons/fa";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useJobs } from "../../context/JobsContext";
 
 function formatPostedDate(value) {
@@ -25,7 +24,6 @@ function formatPostedDate(value) {
 }
 
 export default function JobPortalSaved() {
-  const navigate = useNavigate();
   const { savedJobs, savedJobsLoading, unsaveJob } = useJobs();
   const [searchValue, setSearchValue] = useState("");
   const [selectedJobIds, setSelectedJobIds] = useState([]);
@@ -260,16 +258,6 @@ export default function JobPortalSaved() {
           )}
         </section>
 
-        <div className="saved-jobs-bottom-actions">
-          <button
-            type="button"
-            className="saved-jobs-return-home-btn"
-            onClick={() => navigate("/student/job-portal")}
-          >
-            <FaArrowLeft />
-            <span>Return to Job Portal</span>
-          </button>
-        </div>
       </div>
     </div>
   );

@@ -1,13 +1,11 @@
 import "./AlertsPage.css";
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
 import {
   FaBell,
   FaTrashAlt,
   FaCheckCircle,
   FaRegBell,
   FaEnvelopeOpenText,
-  FaArrowLeft,
   FaTimes,
 } from "react-icons/fa";
 import {
@@ -203,13 +201,6 @@ function AlertsPage() {
     <div className="alerts-page">
       <section className="alerts-hero">
         <div className="alerts-hero-content">
-          <Link to="/student/home" className="alerts-back-link">
-            <span className="alerts-back-icon-wrap">
-              <FaArrowLeft className="alerts-back-icon" />
-            </span>
-            <span>Back</span>
-          </Link>
-
           <h1>Alerts &amp; Messages</h1>
           <p>
             Get employer messages, application updates, and interview requests in one place.

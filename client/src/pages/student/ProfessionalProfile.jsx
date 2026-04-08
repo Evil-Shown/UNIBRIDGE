@@ -397,10 +397,11 @@ const ProfessionalProfile = () => {
                         </div>
                       ) : (
                         <div className="profile-picture-empty">
-                          <div className="upload-placeholder">
+                          <div className="upload-placeholder" onClick={() => fileInputRef.current?.click()}>
+                            <div className="illustration-box" style={{width: '60px', height: '60px', fontSize: '24px', marginBottom: '10px'}}><FaPlus /></div>
                             <p>Add a file</p>
                             <small>Drag and drop a file here or...</small>
-                            <button type="button" className="btn-primary" onClick={() => fileInputRef.current?.click()}>Choose a file</button>
+                            <button type="button" className="btn-primary" style={{marginTop:'10px'}}>Choose a file</button>
                           </div>
                         </div>
                       )}
@@ -428,12 +429,12 @@ const ProfessionalProfile = () => {
                   <div className="form-group full-width">
                     <label>Gender</label>
                     <div className="gender-options">
-                      <label className="radio-option">
-                        <input type="radio" name="gender" value="woman" checked={formData.gender === 'woman'} onChange={e => setFormData({...formData, gender: e.target.value})} />
+                      <label className={`radio-option-card ${formData.gender === 'woman' ? 'active' : ''}`} onClick={() => setFormData({...formData, gender: 'woman'})}>
+                        <div className="radio-circle"><div className="inner"></div></div>
                         <span>I'm a woman</span>
                       </label>
-                      <label className="radio-option">
-                        <input type="radio" name="gender" value="man" checked={formData.gender === 'man'} onChange={e => setFormData({...formData, gender: e.target.value})} />
+                      <label className={`radio-option-card ${formData.gender === 'man' ? 'active' : ''}`} onClick={() => setFormData({...formData, gender: 'man'})}>
+                        <div className="radio-circle"><div className="inner"></div></div>
                         <span>I'm a man</span>
                       </label>
                     </div>
@@ -446,63 +447,204 @@ const ProfessionalProfile = () => {
                   <div className="form-group full-width"><label>Current Position</label><input type="text" placeholder="e.g. Product Designer" value={formData.currentPosition || ''} onChange={e => setFormData({...formData, currentPosition: e.target.value})} /></div>
                 </div>
               )}
+
               {activeModal === 'target' && (
                 <div className="form-grid">
-                  <div className="form-group full-width"><label>Job Title</label><input type="text" value={formData.jobTitle || ''} onChange={e => setFormData({...formData, jobTitle: e.target.value})} /></div>
-                  <div className="form-group"><label>Desired Location</label><input type="text" value={formData.desiredLocation || ''} onChange={e => setFormData({...formData, desiredLocation: e.target.value})} /></div>
-                  <div className="form-group"><label>Contract Type</label><select value={formData.contractType || ''} onChange={e => setFormData({...formData, contractType: e.target.value})}>
-                    <option value="">Select</option>
-                    <option value="Internship">Internship</option>
-                    <option value="Full-time">Full-time</option>
-                    <option value="Part-time">Part-time</option>
-                    <option value="Contract">Contract</option>
-                    <option value="Freelance">Freelance</option>
-                  </select></div>
-                  <div className="form-group"><label>Remote Work</label><select value={formData.remoteWork || ''} onChange={e => setFormData({...formData, remoteWork: e.target.value})}>
-                    <option value="">Select</option>
-                    <option value="A few days at home">A few days at home</option>
-                    <option value="Occasional remote">Occasional remote</option>
-                    <option value="Fully-remote">Fully-remote</option>
-                  </select></div>
-                  <div className="form-group"><label>Experience Level</label><select value={formData.experienceLevel || ''} onChange={e => setFormData({...formData, experienceLevel: e.target.value})}>
-                    <option value="">Select</option>
-                    <option value="0-1 years">0-1 years</option>
-                    <option value="1-3 years">1-3 years</option>
-                    <option value="3-5 years">3-5 years</option>
-                    <option value="5-10 years">5-10 years</option>
-                    <option value="10+ years">10+ years</option>
-                  </select></div>
-                  <div className="form-group"><label>Salary Currency</label><select value={formData.currency || 'LKR'} onChange={e => setFormData({...formData, currency: e.target.value})}><option value="LKR">LKR</option><option value="USD">USD</option></select></div>
-                  <div className="form-group"><label>Minimum Salary</label><input type="number" value={formData.minimumSalary || ''} onChange={e => setFormData({...formData, minimumSalary: e.target.value})} /></div>
-                  <div className="form-group full-width"><label>Summary</label><textarea rows="4" value={formData.summary || ''} onChange={e => setFormData({...formData, summary: e.target.value})} placeholder="Describe your drivers, what you are looking for."></textarea></div>
+                  <div className="form-group full-width">
+                    <label>Job title <span className="recommended-tag">Recommended</span></label>
+                    <input type="text" placeholder="e.g. Product Manager" value={formData.jobTitle || ''} onChange={e => setFormData({...formData, jobTitle: e.target.value})} />
+                  </div>
+                  <div className="form-group full-width">
+                    <label>Desired work location <span className="recommended-tag">Recommended</span></label>
+                    <input type="text" placeholder="City, region, country" value={formData.desiredLocation || ''} onChange={e => setFormData({...formData, desiredLocation: e.target.value})} />
+                  </div>
+                  <div className="form-group">
+                    <label>Contract type</label>
+                    <select value={formData.contractType || ''} onChange={e => setFormData({...formData, contractType: e.target.value})}>
+                      <option value="">Select</option>
+                      <option value="Internship">Internship</option>
+                      <option value="Full-time">Full-time</option>
+                      <option value="Part-time">Part-time</option>
+                      <option value="Contract">Contract</option>
+                      <option value="Freelance">Freelance</option>
+                    </select>
+                  </div>
+
+                  <div className="form-group full-width">
+                    <label>Remote work</label>
+                    <div className="remote-work-grid">
+                      <div className={`remote-option-card ${formData.remoteWork === 'A few days at home' ? 'active' : ''}`} onClick={() => setFormData({...formData, remoteWork: 'A few days at home'})}>
+                        <h4>A few days at home</h4>
+                        <p>Work mainly in the office but can take some remote days.</p>
+                      </div>
+                      <div className={`remote-option-card ${formData.remoteWork === 'Occasional remote' ? 'active' : ''}`} onClick={() => setFormData({...formData, remoteWork: 'Occasional remote'})}>
+                        <h4>Occasional remote</h4>
+                        <p>Can work from home a few days a week.</p>
+                      </div>
+                      <div className={`remote-option-card ${formData.remoteWork === 'Fully-remote' ? 'active' : ''}`} onClick={() => setFormData({...formData, remoteWork: 'Fully-remote'})}>
+                        <h4>Fully-remote</h4>
+                        <p>Can work fully from home.</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="form-group full-width">
+                    <label>Level of experience <span className="recommended-tag">Recommended</span></label>
+                    <div className="experience-pills">
+                      {['0-1 years', '1-3 years', '3-5 years', '5-10 years', '10+ years'].map(lvl => (
+                        <div key={lvl} className={`exp-pill ${formData.experienceLevel === lvl ? 'active' : ''}`} onClick={() => setFormData({...formData, experienceLevel: lvl})}>{lvl}</div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="form-group">
+                    <label>Minimum gross salary a month</label>
+                    <input type="number" placeholder="Example: 40000" value={formData.minimumSalary || ''} onChange={e => setFormData({...formData, minimumSalary: e.target.value})} />
+                  </div>
+                  <div className="form-group">
+                    <label>Currency</label>
+                    <select value={formData.currency || 'LKR'} onChange={e => setFormData({...formData, currency: e.target.value})}>
+                      <option value="LKR">Sri Lankan Rupee (LKR)</option>
+                      <option value="USD">US Dollar (USD)</option>
+                    </select>
+                  </div>
+                  <div className="form-group full-width">
+                    <label>Share what you are looking for with your own words</label>
+                    <textarea rows="4" value={formData.summary || ''} onChange={e => setFormData({...formData, summary: e.target.value})} placeholder="Describe your drivers, what you are looking for."></textarea>
+                  </div>
                 </div>
               )}
-              {activeModal === 'work' && (
-                <div className="form-grid">
-                  <div className="form-group"><label>Job Title</label><input type="text" value={formData.jobTitle} onChange={e => setFormData({...formData, jobTitle: e.target.value})} /></div>
-                  <div className="form-group"><label>Company Name</label><input type="text" value={formData.companyName} onChange={e => setFormData({...formData, companyName: e.target.value})} /></div>
-                  <div className="form-group"><label>Start Date</label><input type="month" value={formData.startDate} onChange={e => setFormData({...formData, startDate: e.target.value})} /></div>
-                  <div className="form-group"><label>End Date</label><input type="month" disabled={formData.currentlyWorking} value={formData.endDate} onChange={e => setFormData({...formData, endDate: e.target.value})} /></div>
-                  <div className="form-group full-width"><label><input type="checkbox" checked={formData.currentlyWorking} onChange={e => setFormData({...formData, currentlyWorking: e.target.checked})} /> I currently work here</label></div>
-                  <div className="form-group full-width"><label>Description</label><textarea rows="3" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})}></textarea></div>
+
+              {(activeModal === 'work' || activeModal === 'education') && (
+                <div className="list-management-container">
+                  <div className="modal-list-manager">
+                    {(activeModal === 'work' ? profile.workExperiences : profile.educationItems).length > 0 ? (
+                      (activeModal === 'work' ? profile.workExperiences : profile.educationItems).map((item, idx) => (
+                        <div key={item.id || idx} className="manager-item">
+                          <div className="item-info">
+                            <h4>{activeModal === 'work' ? item.jobTitle : item.title}</h4>
+                            <p>{activeModal === 'work' ? item.companyName : item.institution}</p>
+                          </div>
+                          <div className="item-actions">
+                            <button className="action-btn delete-btn" onClick={() => {
+                              const newList = [...(activeModal === 'work' ? profile.workExperiences : profile.educationItems)];
+                              newList.splice(idx, 1);
+                              updateProfile({ [activeModal === 'work' ? 'workExperiences' : 'educationItems']: newList });
+                            }}><FaTrash /></button>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="empty-state-container">
+                        <div className="illustration-box"><FaBriefcase /></div>
+                        <h4>No entries yet</h4>
+                        <p>Tell recruiters more about your past and current experiences.</p>
+                      </div>
+                    )}
+                    
+                    <button className="add-list-item-btn" onClick={() => setFormData({ id: Date.now(), isAdding: true })}>
+                      <FaPlus /> {activeModal === 'work' ? 'Add experience' : 'Add education'}
+                    </button>
+                  </div>
+
+                  {formData.isAdding && (
+                    <div className="form-grid fade-in-up" style={{background:'#f8fafc', padding:'20px', borderRadius:'15px', border:'1px solid #e2e8f0'}}>
+                      {activeModal === 'work' ? (
+                        <>
+                          <div className="form-group full-width"><label>Job title</label><input type="text" placeholder="e.g. Software Engineering Intern" value={formData.jobTitle || ''} onChange={e => setFormData({...formData, jobTitle: e.target.value})} /></div>
+                          <div className="form-group"><label>Company name</label><input type="text" placeholder="e.g. WSO2" value={formData.companyName || ''} onChange={e => setFormData({...formData, companyName: e.target.value})} /></div>
+                          <div className="form-group"><label>Location</label><input type="text" placeholder="e.g. Colombo, Sri Lanka" value={formData.location || ''} onChange={e => setFormData({...formData, location: e.target.value})} /></div>
+                          <div className="form-group"><label>Employment type</label>
+                            <select value={formData.employmentType || ''} onChange={e => setFormData({...formData, employmentType: e.target.value})}>
+                              <option value="">Select</option>
+                              <option value="Full-time">Full-time</option>
+                              <option value="Part-time">Part-time</option>
+                              <option value="Internship">Internship</option>
+                              <option value="Contract">Contract</option>
+                            </select>
+                          </div>
+                          <div className="form-group"><label>Start date</label><input type="month" value={formData.startDate || ''} onChange={e => setFormData({...formData, startDate: e.target.value})} /></div>
+                          <div className="form-group"><label>End date</label><input type="month" value={formData.endDate || ''} disabled={formData.currentlyWorking} onChange={e => setFormData({...formData, endDate: e.target.value})} /></div>
+                          <div className="form-group full-width"><label className="checkbox-label"><input type="checkbox" checked={formData.currentlyWorking || false} onChange={e => setFormData({...formData, currentlyWorking: e.target.checked})} /> I currently work here</label></div>
+                          <div className="form-group full-width"><label>Description / responsibilities</label><textarea rows="3" placeholder="Briefly describe what you worked on, your responsibilities, etc." value={formData.description || ''} onChange={e => setFormData({...formData, description: e.target.value})}></textarea></div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="form-group full-width"><label>Title</label><input type="text" placeholder="e.g. BSc (Hons) in Computer Science" value={formData.title || ''} onChange={e => setFormData({...formData, title: e.target.value})} /></div>
+                          <div className="form-group"><label>Level</label>
+                            <select value={formData.level || ''} onChange={e => setFormData({...formData, level: e.target.value})}>
+                              <option value="">Select</option>
+                              <option value="Bachelor's">Bachelor's</option>
+                              <option value="Master's">Master's</option>
+                              <option value="PhD">PhD</option>
+                              <option value="Diploma">Diploma</option>
+                              <option value="Certificate">Certificate</option>
+                            </select>
+                          </div>
+                          <div className="form-group"><label>University, school or body</label><input type="text" placeholder="e.g. University of Colombo" value={formData.institution || ''} onChange={e => setFormData({...formData, institution: e.target.value})} /></div>
+                          <div className="form-group"><label>From</label><input type="month" value={formData.fromDate || ''} onChange={e => setFormData({...formData, fromDate: e.target.value})} /></div>
+                          <div className="form-group"><label>To</label><input type="month" value={formData.toDate || ''} disabled={formData.currentlyStudying} onChange={e => setFormData({...formData, toDate: e.target.value})} /></div>
+                          <div className="form-group full-width"><label className="checkbox-label"><input type="checkbox" checked={formData.currentlyStudying || false} onChange={e => setFormData({...formData, currentlyStudying: e.target.checked})} /> I'm still studying here</label></div>
+                          <div className="form-group full-width"><label>Projects involved</label><textarea rows="3" placeholder="e.g. Final year software engineering project..." value={formData.projectsInvolved || ''} onChange={e => setFormData({...formData, projectsInvolved: e.target.value})}></textarea></div>
+                        </>
+                      )}
+                      <div className="form-footer" style={{display:'flex', gap:'10px', marginTop:'15px'}}>
+                        <button className="btn-primary" onClick={() => {
+                          const list = activeModal === 'work' ? profile.workExperiences : profile.educationItems;
+                          const newItem = { ...formData };
+                          delete newItem.isAdding;
+                          updateProfile({ [activeModal === 'work' ? 'workExperiences' : 'educationItems']: [...list, newItem] });
+                        }}>Add Entry</button>
+                        <button className="btn-secondary" onClick={() => setFormData({})}>Cancel</button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
-              {activeModal === 'education' && (
-                <div className="form-grid">
-                  <div className="form-group"><label>Degree/Level</label><input type="text" value={formData.level} onChange={e => setFormData({...formData, level: e.target.value})} /></div>
-                  <div className="form-group"><label>Field of Study</label><input type="text" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} /></div>
-                  <div className="form-group full-width"><label>Institution</label><input type="text" value={formData.institution} onChange={e => setFormData({...formData, institution: e.target.value})} /></div>
-                  <div className="form-group"><label>From Date</label><input type="month" value={formData.fromDate} onChange={e => setFormData({...formData, fromDate: e.target.value})} /></div>
-                  <div className="form-group"><label>To Date</label><input type="month" disabled={formData.currentlyStudying} value={formData.toDate} onChange={e => setFormData({...formData, toDate: e.target.value})} /></div>
-                  <div className="form-group full-width"><label><input type="checkbox" checked={formData.currentlyStudying} onChange={e => setFormData({...formData, currentlyStudying: e.target.checked})} /> I am currently studying here</label></div>
+
+              {(activeModal === 'skills' || activeModal === 'languages') && (
+                <div className="skills-management">
+                  <div className="search-input-wrapper">
+                    <FaBriefcase className="search-icon" />
+                    <input 
+                      type="text" 
+                      placeholder={activeModal === 'skills' ? "Search for skills (e.g. Figma)" : "Search for languages (e.g. English)"} 
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter' && e.target.value.trim()) {
+                          const val = e.target.value.trim();
+                          const list = profile[activeModal] || [];
+                          if (!list.includes(val)) {
+                            updateProfile({ [activeModal]: [...list, val] });
+                          }
+                          e.target.value = '';
+                        }
+                      }}
+                    />
+                  </div>
+
+                  <div className="skill-tags" style={{marginBottom: '30px'}}>
+                    {profile[activeModal]?.map((item, idx) => (
+                      <span key={idx} className="skill-tag">
+                        {item}
+                        <FaTimes style={{marginLeft:'8px', cursor:'pointer'}} onClick={() => {
+                          const list = [...profile[activeModal]];
+                          list.splice(idx, 1);
+                          updateProfile({ [activeModal]: list });
+                        }} />
+                      </span>
+                    ))}
+                  </div>
+
+                  {(!profile[activeModal] || profile[activeModal].length === 0) && (
+                    <div className="empty-state-container">
+                      <div className="illustration-box">{activeModal === 'skills' ? <FaRegFileAlt /> : <FaGlobe />}</div>
+                      <h4>Start building your list</h4>
+                      <p>Search and select {activeModal} to add them to your list.</p>
+                    </div>
+                  )}
                 </div>
               )}
-              {activeModal === 'skills' && (
-                <div className="form-group full-width">
-                  <label>Skills (comma separated)</label>
-                  <textarea rows="4" value={formData.skills} onChange={e => setFormData({ skills: e.target.value })}></textarea>
-                </div>
-              )}
+
               {activeModal === 'other-assets' && (
                 <div className="form-grid">
                   <div className="form-group full-width">
@@ -519,41 +661,26 @@ const ProfessionalProfile = () => {
                   </div>
                 </div>
               )}
-              {activeModal === 'languages' && (
-                <div className="form-group full-width">
-                  <label>Languages (comma separated)</label>
-                  <textarea rows="4" value={formData.languages || ''} onChange={e => setFormData({ languages: e.target.value })} placeholder="Example: English, Sinhala, Tamil"></textarea>
-                </div>
-              )}
-              {activeModal === 'headline' && (
-                <div className="form-group full-width">
-                  <label>Professional Headline</label>
-                  <input type="text" value={formData.currentPosition} onChange={e => setFormData({ currentPosition: e.target.value })} />
-                </div>
-              )}
             </div>
             <div className="modal-footer">
-              <button className="btn-secondary" onClick={() => setActiveModal(null)}>Cancel</button>
-              <button className="btn-primary" onClick={() => {
-                if (activeModal === 'profile') {
-                  updateProfile({
-                    firstName: formData.firstName,
-                    lastName: formData.lastName,
-                    phone: formData.phone,
-                    birthDate: formData.birthDate,
-                    currentPosition: formData.currentPosition,
-                    gender: formData.gender,
-                    profilePicture: formData.profilePicture
-                  });
-                }
-                else if (activeModal === 'target') updateProfile({ targetJob: formData });
-                else if (activeModal === 'work') updateProfile({ workExperiences: [...(profile.workExperiences || []), formData] });
-                else if (activeModal === 'education') updateProfile({ educationItems: [...(profile.educationItems || []), formData] });
-                else if (activeModal === 'skills') updateProfile({ skills: formData.skills.split(',').map(s => s.trim()) });
-                else if (activeModal === 'languages') updateProfile({ languages: formData.languages.split(',').map(l => l.trim()) });
-                else if (activeModal === 'other-assets') updateProfile({ otherAssets: formData });
-                else if (activeModal === 'headline') updateProfile({ currentPosition: formData.currentPosition });
-              }}>Save Changes</button>
+              <button className="btn-secondary" onClick={() => setActiveModal(null)}>{activeModal === 'work' || activeModal === 'education' ? 'Close' : 'Cancel'}</button>
+              {!(activeModal === 'work' || activeModal === 'education' || activeModal === 'skills' || activeModal === 'languages') && (
+                <button className="btn-primary" onClick={() => {
+                  if (activeModal === 'profile') {
+                    updateProfile({
+                      firstName: formData.firstName,
+                      lastName: formData.lastName,
+                      phone: formData.phone,
+                      birthDate: formData.birthDate,
+                      currentPosition: formData.currentPosition,
+                      gender: formData.gender,
+                      profilePicture: formData.profilePicture
+                    });
+                  }
+                  else if (activeModal === 'target') updateProfile({ targetJob: formData });
+                  else if (activeModal === 'other-assets') updateProfile({ otherAssets: formData });
+                }}>Save Changes</button>
+              )}
             </div>
           </div>
         </div>

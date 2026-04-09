@@ -34,6 +34,7 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminNotificationsPage from './pages/AdminNotificationsPage';
 import ProfessionalProfile from './pages/student/ProfessionalProfile';
 import AlertsPage from './pages/AlertsPage';
+import StructuredStudyMaterialsPage from './pages/StructuredStudyMaterialsPage';
 
 // Job Portal Pages
 import JobPortal from './pages/student/JobPortal';
@@ -83,6 +84,7 @@ function App() {
                 <Route path="home" element={<StudentHome />} />
                 <Route path="materials" element={<Materials />} />
                 <Route path="materials/browse" element={<BrowseStudyMaterials />} />
+                <Route path="materials/structured" element={<StructuredStudyMaterialsPage />} />
                 <Route path="materials/submit" element={<SubmitStudyMaterialPage />} />
                 <Route path="kuppi" element={<Kuppi />} />
                 
@@ -118,6 +120,7 @@ function App() {
         <Route path="/admin/notifications" element={<ProtectedRoute role="admin"><AdminNotificationsPage /></ProtectedRoute>} />
         <Route path="/admin/lecture-hub" element={<ProtectedRoute role="admin"><Materials /></ProtectedRoute>} />
         <Route path="/admin/lecture-hub/browse" element={<ProtectedRoute role="admin"><BrowseStudyMaterials /></ProtectedRoute>} />
+        <Route path="/admin/lecture-hub/structured" element={<ProtectedRoute role="admin"><StructuredStudyMaterialsPage /></ProtectedRoute>} />
         <Route path="/admin/lecture-hub/manage" element={<ProtectedRoute role="admin"><ManageStudyMaterialsPage /></ProtectedRoute>} />
         <Route path="/admin/lecture-hub/modules" element={<ProtectedRoute role="admin"><ManageModulesPage /></ProtectedRoute>} />
         <Route path="/admin/lecture-hub/upload" element={<ProtectedRoute role="admin"><UploadMaterial /></ProtectedRoute>} />

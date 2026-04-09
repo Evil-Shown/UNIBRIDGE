@@ -1,0 +1,351 @@
+/* Structured Study Materials Page */
+
+.structured-materials-container {
+  padding: 100px 24px 60px;
+  max-width: 1100px;
+  margin: 0 auto;
+  min-height: 100vh;
+}
+
+.structured-materials-header {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.structured-materials-header h1 {
+  font-size: 1.875rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0;
+}
+
+.structured-materials-header p {
+  color: #475569;
+  font-size: 0.875rem;
+  margin: 0.5rem 0 0 0;
+}
+
+.years-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.year-accordion {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.year-accordion:hover {
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+  border-color: #cbd5e1;
+}
+
+.year-accordion-header {
+  background: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%);
+  color: #ffffff;
+  padding: 1.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: none;
+  width: 100%;
+  font-size: 1.125rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.year-accordion-header:hover {
+  background: linear-gradient(135deg, #5558e0 0%, #0599b8 100%);
+}
+
+.year-accordion-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0;
+}
+
+.year-accordion-subtitle {
+  font-size: 0.75rem;
+  opacity: 0.9;
+  margin-top: 0.25rem;
+}
+
+.year-accordion-toggle {
+  font-size: 1.5rem;
+  transition: transform 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+}
+
+.year-accordion-toggle.open {
+  transform: rotate(180deg);
+}
+
+.year-accordion-content {
+  padding: 1.5rem;
+  background: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.semester-section {
+  margin-bottom: 1.5rem;
+}
+
+.semester-section:last-child {
+  margin-bottom: 0;
+}
+
+.semester-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.modules-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.module-button {
+  background: #dbeafe;
+  color: #0369a1;
+  border: 1px solid #7dd3fc;
+  border-radius: 9999px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.module-button:hover {
+  background: #bfdbfe;
+  border-color: #0369a1;
+  color: #0c2d47;
+}
+
+.materials-list {
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.module-materials-section {
+  margin-bottom: 1rem;
+}
+
+.module-materials-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 0.75rem;
+}
+
+.material-item {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.material-item:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.material-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.material-title {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #1e293b;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.material-meta {
+  font-size: 0.75rem;
+  color: #64748b;
+  margin: 0.25rem 0 0 0;
+}
+
+.material-download-btn {
+  background: #3b82f6;
+  color: #ffffff;
+  border: none;
+  border-radius: 0.375rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.material-download-btn:hover {
+  background: #2563eb;
+}
+
+.empty-message {
+  font-size: 0.75rem;
+  color: #64748b;
+  font-style: italic;
+  padding: 0.5rem 0;
+}
+
+.loading-spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid #e2e8f0;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.empty-state {
+  background: #f8fafc;
+  border: 2px dashed #cbd5e1;
+  border-radius: 0.75rem;
+  padding: 2rem;
+  text-align: center;
+}
+
+.empty-state-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.empty-state-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0;
+}
+
+.empty-state-description {
+  color: #475569;
+  font-size: 0.875rem;
+  margin: 0.75rem 0 0 0;
+}
+
+.file-badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.625rem;
+  font-weight: 600;
+  white-space: nowrap;
+  margin-right: 0.5rem;
+}
+
+.file-badge.pdf {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.file-badge.doc,
+.file-badge.docx {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.file-badge.xls,
+.file-badge.xlsx {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.file-badge.ppt,
+.file-badge.pptx {
+  background: #fed7aa;
+  color: #9a3412;
+}
+
+.file-badge.video {
+  background: #e9d5ff;
+  color: #6b21a8;
+}
+
+.file-badge.audio {
+  background: #fbcfe8;
+  color: #be185d;
+}
+
+.file-badge.file {
+  background: #f1f5f9;
+  color: #1e293b;
+}
+
+@media (max-width: 768px) {
+  .structured-materials-container {
+    padding: 80px 16px 40px;
+  }
+
+  .structured-materials-header {
+    padding: 1.5rem;
+  }
+
+  .structured-materials-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .years-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .year-accordion-header {
+    padding: 1rem;
+    font-size: 1rem;
+  }
+
+  .year-accordion-content {
+    padding: 1rem;
+  }
+}

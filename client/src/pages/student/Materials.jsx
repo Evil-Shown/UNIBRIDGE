@@ -107,6 +107,12 @@ const Materials = () => {
       icon: '📖'
     },
     {
+      to: '/student/materials/structured',
+      title: 'Structured Materials',
+      description: 'Browse by year and semester',
+      icon: '📚'
+    },
+    {
       to: '/student/materials/submit',
       title: 'Submit Study Material',
       description: 'Send your content for review',
@@ -126,6 +132,12 @@ const Materials = () => {
       title: 'Manage Modules',
       description: 'Maintain year-semester modules',
       icon: '🧩'
+    },
+    {
+      to: '/admin/lecture-hub/structured',
+      title: 'Structured Materials',
+      description: 'Browse by year and semester',
+      icon: '📚'
     },
     {
       to: '/admin/lecture-hub/upload',
@@ -184,7 +196,7 @@ const Materials = () => {
 
       <section>
         <h2 className="text-xl font-semibold text-slate-900 mb-4">Quick Actions</h2>
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-4 md:grid-cols-3">
           {studentActions.map((action) => (
             <QuickActionCard key={action.to} {...action} />
           ))}

@@ -33,7 +33,14 @@ const AdminDashboard = () => {
     const fetchList = async (endpoint) => {
         try {
             setLoading(true);
-            const res = await axios.get(`http://localhost:5000/api/admin/${endpoint}`);
+            let url = `http://localhost:5000/api/admin/${endpoint}`;
+            
+            // Use dedicated endpoint for modules
+            if (endpoint === 'modules') {
+                url = `http://localhost:5000/api/modules`;
+            }
+            
+            const res = await axios.get(url);
             setListData(res.data.data);
         } catch (err) {
             setError(err.response?.data?.message || `Failed to load ${endpoint}`);
@@ -50,7 +57,14 @@ const AdminDashboard = () => {
     const handleDelete = async (endpoint, id) => {
         if (!window.confirm(`Are you absolutely sure you want to delete this ${endpoint.slice(0, -1)}?`)) return;
         try {
-            await axios.delete(`http://localhost:5000/api/admin/${endpoint}/${id}`);
+            let url = `http://localhost:5000/api/admin/${endpoint}/${id}`;
+            
+            // Use dedicated endpoint for modules
+            if (endpoint === 'modules') {
+                url = `http://localhost:5000/api/modules/${id}`;
+            }
+            
+            await axios.delete(url);
             if (activeTab === 'analytics') fetchStats();
             else fetchList(activeTab);
         } catch (err) {
@@ -79,9 +93,19 @@ const AdminDashboard = () => {
             setEditForm({ 
                 title: item.title, 
                 module: item.module, 
+                year: item.year || '',
+                semester: item.semester || '',
                 date: item.date ? new Date(item.date).toISOString().slice(0, 16) : '', 
                 location: item.location || '',
                 maxParticipants: item.maxParticipants || ''
+            });
+        } else if (activeTab === 'modules') {
+            setEditForm({ 
+                name: item.name, 
+                year: String(item.year), 
+                semester: String(item.semester),
+                code: item.code || '',
+                description: item.description || ''
             });
         }
     };
@@ -90,7 +114,14 @@ const AdminDashboard = () => {
         e.preventDefault();
         setIsSaving(true);
         try {
-            await axios.put(`http://localhost:5000/api/admin/${activeTab}/${editingItem._id}`, editForm);
+            let url = `http://localhost:5000/api/admin/${activeTab}/${editingItem._id}`;
+            
+            // Use dedicated endpoint for modules
+            if (activeTab === 'modules') {
+                url = `http://localhost:5000/api/modules/${editingItem._id}`;
+            }
+            
+            await axios.put(url, editForm);
             setEditingItem(null);
             fetchList(activeTab); // refresh table
         } catch (err) {
@@ -100,7 +131,7 @@ const AdminDashboard = () => {
         }
     };
 
-    const tabOptions = ['analytics', 'users', 'jobs', 'materials', 'kuppis'];
+    const tabOptions = ['analytics', 'users', 'jobs', 'materials', 'kuppis', 'modules'];
 
     return (
         <div className="admin-container fade-in-up">
@@ -243,6 +274,7 @@ const AdminDashboard = () => {
                                     <tr>
                                         <th>Title</th>
                                         <th>Module</th>
+                                        <th>Year / Semester</th>
                                         <th>Date</th>
                                         <th>Host Email</th>
                                         <th>Actions</th>
@@ -253,11 +285,42 @@ const AdminDashboard = () => {
                                         <tr key={k._id}>
                                             <td style={{ fontWeight: 600 }}>{k.title}</td>
                                             <td style={{ color: 'var(--text-muted)' }}>{k.module}</td>
+                                            <td style={{ color: 'var(--text-muted)' }}>{k.year || '-'} / {k.semester || '-'}</td>
                                             <td>{new Date(k.date).toLocaleString()}</td>
                                             <td>{k.student?.email || 'N/A'}</td>
                                             <td>
                                                 <button className="btn btn-sm btn-outline" style={{ marginRight: '8px' }} onClick={() => handleEditClick(k)}>Edit</button>
                                                 <button className="btn-delete" onClick={() => handleDelete('kuppis', k._id)}>Delete</button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+
+                    {activeTab === 'modules' && (
+                        <div className="admin-table-wrapper">
+                            <table className="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Year</th>
+                                        <th>Semester</th>
+                                        <th>Code</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {listData.map(m => (
+                                        <tr key={m._id}>
+                                            <td style={{ fontWeight: 600 }}>{m.name}</td>
+                                            <td>{m.year}</td>
+                                            <td>{m.semester}</td>
+                                            <td style={{ color: 'var(--text-muted)' }}>{m.code || 'N/A'}</td>
+                                            <td>
+                                                <button className="btn btn-sm btn-outline" style={{ marginRight: '8px' }} onClick={() => handleEditClick(m)}>Edit</button>
+                                                <button className="btn-delete" onClick={() => handleDelete('modules', m._id)}>Delete</button>
                                             </td>
                                         </tr>
                                     ))}
@@ -341,9 +404,50 @@ const AdminDashboard = () => {
                                 <>
                                     <div className="form-group"><label>Session Title</label><input required value={editForm.title} onChange={e => setEditForm({...editForm, title: e.target.value})} /></div>
                                     <div className="form-group"><label>Module Code</label><input required value={editForm.module} onChange={e => setEditForm({...editForm, module: e.target.value})} /></div>
+                                    <div className="form-group"><label>Year</label>
+                                        <select required value={editForm.year || ''} onChange={e => setEditForm({...editForm, year: e.target.value})}>
+                                            <option value="">Select year</option>
+                                            <option value="Year 1">Year 1</option>
+                                            <option value="Year 2">Year 2</option>
+                                            <option value="Year 3">Year 3</option>
+                                            <option value="Year 4">Year 4</option>
+                                        </select>
+                                    </div>
+                                    <div className="form-group"><label>Semester</label>
+                                        <select required value={editForm.semester || ''} onChange={e => setEditForm({...editForm, semester: e.target.value})}>
+                                            <option value="">Select semester</option>
+                                            <option value="Semester 1">Semester 1</option>
+                                            <option value="Semester 2">Semester 2</option>
+                                        </select>
+                                    </div>
                                     <div className="form-group"><label>Date & Time</label><input required type="datetime-local" value={editForm.date} onChange={e => setEditForm({...editForm, date: e.target.value})} /></div>
                                     <div className="form-group"><label>Location/Meeting Link</label><input value={editForm.location} onChange={e => setEditForm({...editForm, location: e.target.value})} /></div>
                                     <div className="form-group"><label>Max Participants Limit (Optional)</label><input type="number" min="1" value={editForm.maxParticipants} onChange={e => setEditForm({...editForm, maxParticipants: e.target.value})} /></div>
+                                </>
+                            )}
+
+                            {/* Module Editor */}
+                            {activeTab === 'modules' && (
+                                <>
+                                    <div className="form-group"><label>Module Name</label><input required value={editForm.name} onChange={e => setEditForm({...editForm, name: e.target.value})} /></div>
+                                    <div className="form-group"><label>Code (Optional)</label><input value={editForm.code} onChange={e => setEditForm({...editForm, code: e.target.value})} /></div>
+                                    <div className="form-group"><label>Year</label>
+                                        <select required value={editForm.year} onChange={e => setEditForm({...editForm, year: e.target.value})}>
+                                            <option value="">Select Year</option>
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                            <option value="4">4</option>
+                                        </select>
+                                    </div>
+                                    <div className="form-group"><label>Semester</label>
+                                        <select required value={editForm.semester} onChange={e => setEditForm({...editForm, semester: e.target.value})}>
+                                            <option value="">Select Semester</option>
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                        </select>
+                                    </div>
+                                    <div className="form-group"><label>Description (Optional)</label><textarea value={editForm.description} onChange={e => setEditForm({...editForm, description: e.target.value})} /></div>
                                 </>
                             )}
 

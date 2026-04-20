@@ -1590,7 +1590,7 @@ function WorkExperienceModal({
               </div>
 
               <div className="target-job-form-grid">
-                <div className="profile-form-group full-width">
+                <div className="profile-form-group">
                   <label className="profile-form-label">
                     Job title <span className="recommended-pill">Required</span>
                   </label>

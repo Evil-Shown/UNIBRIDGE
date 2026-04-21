@@ -75,6 +75,10 @@ const MAX_IMAGE_SIZE = 4 * 1024 * 1024;
 const TARGET_JOB_CHARACTER_LIMIT = 300;
 const CURRENT_MONTH = new Date().toISOString().slice(0, 7);
 const WORK_EXPERIENCE_DESCRIPTION_LIMIT = 400;
+const REQUEST_TIMEOUT = 15000;
+
+const createLocalId = () =>
+  `local-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 
 const JOB_TITLE_SUGGESTIONS = [
   "Software Engineer",
@@ -2257,31 +2261,42 @@ function EducationQualificationsModal({
                   ) : null}
                 </div>
 
-                <div className="profile-form-group">
-                  <label className="profile-form-label">Level</label>
-                  <select
-                    value={formData.level}
-                    onChange={(e) => onChange("level", e.target.value)}
-                    className="target-job-select"
-                  >
-                    <option value="">Select</option>
-                    {EDUCATION_LEVEL_OPTIONS.map((item) => (
-                      <option key={item} value={item}>
-                        {item}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                 <div className="profile-form-group">
+                   <label className="profile-form-label">
+                     Level <span className="recommended-pill">Required</span>
+                  </label>
+  <select
+    value={formData.level}
+    onChange={(e) => onChange("level", e.target.value)}
+    className={errors.level ? "target-job-select input-error" : "target-job-select"}
+  >
+    <option value="">Select</option>
+    {EDUCATION_LEVEL_OPTIONS.map((item) => (
+      <option key={item} value={item}>
+        {item}
+      </option>
+    ))}
+  </select>
+  {errors.level ? (
+    <p className="profile-field-error">{errors.level}</p>
+  ) : null}
+</div>
 
                 <div className="profile-form-group">
-                  <label className="profile-form-label">Institution</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. SLIIT"
-                    value={formData.institution}
-                    onChange={(e) => onChange("institution", e.target.value)}
-                  />
-                </div>
+  <label className="profile-form-label">
+    Institution <span className="recommended-pill">Required</span>
+  </label>
+  <input
+    type="text"
+    placeholder="e.g. SLIIT"
+    value={formData.institution}
+    onChange={(e) => onChange("institution", e.target.value)}
+    className={errors.institution ? "input-error" : ""}
+  />
+  {errors.institution ? (
+    <p className="profile-field-error">{errors.institution}</p>
+  ) : null}
+</div>
 
                 <div className="profile-form-group">
                   <label className="profile-form-label">
@@ -2682,36 +2697,18 @@ export default function ProfessionalProfile() {
   const [otherAssetsErrors, setOtherAssetsErrors] = useState({});
   const [isOtherAssetsModalOpen, setIsOtherAssetsModalOpen] = useState(false);
 
-  const buildFullProfilePayload = ({
-    profileOverride = profile,
-    targetJobOverride = targetJob,
-    workExperiencesOverride = workExperiences,
-    skillsOverride = skills,
-    languagesOverride = languages,
-    educationItemsOverride = educationItems,
-    otherAssetsOverride = otherAssets,
-  } = {}) => {
-    return {
-      firstName: profileOverride.firstName?.trim() || "",
-      lastName: profileOverride.lastName?.trim() || "",
-      email: loggedEmail,
-      phone: profileOverride.phone?.trim() || "",
-      birthDate: profileOverride.birthDate || "",
-      currentPosition: profileOverride.currentPosition?.trim() || "",
-      gender: profileOverride.gender?.trim() || "",
-      profilePicture: profileOverride.profilePicture || "",
-      profilePictureName: profileOverride.profilePictureName || "",
-      targetJob: targetJobOverride || initialTargetJob,
-      workExperiences: workExperiencesOverride || [],
-      skills: skillsOverride || [],
-      languages: languagesOverride || [],
-      educationItems: educationItemsOverride || [],
-      otherAssets: otherAssetsOverride || initialOtherAssets,
-    };
-  };
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
+  const [isSavingTargetJob, setIsSavingTargetJob] = useState(false);
+  const [isSavingWorkExperiences, setIsSavingWorkExperiences] = useState(false);
+  const [isSavingSkills, setIsSavingSkills] = useState(false);
+  const [isSavingLanguages, setIsSavingLanguages] = useState(false);
+  const [isSavingEducation, setIsSavingEducation] = useState(false);
+  const [isSavingOtherAssets, setIsSavingOtherAssets] = useState(false);
 
   const persistProfile = async (payload) => {
-    return await axios.put("http://localhost:5000/api/uni/students/profile", payload);
+    return await axios.put("http://localhost:5000/api/uni/students/profile", payload, {
+      timeout: REQUEST_TIMEOUT,
+    });
   };
 
   useEffect(() => {
@@ -2723,47 +2720,56 @@ export default function ProfessionalProfile() {
   }, [profile.profilePicture]);
 
   useEffect(() => {
-    const handleScroll = () => {
+    let ticking = false;
+
+    const updateActiveSection = () => {
       const sections = sectionData
         .map((section) => document.getElementById(section.id))
         .filter(Boolean);
 
-      if (!sections.length) return;
+      if (!sections.length) {
+        ticking = false;
+        return;
+      }
 
       const scrollY = window.scrollY;
       const pageBottom = document.documentElement.scrollHeight;
       const viewportBottom = scrollY + window.innerHeight;
+      let nextActiveSectionId = "";
 
-      if (scrollY < 120) {
-        setActiveSectionId("");
-        return;
-      }
+      if (scrollY >= 120) {
+        if (viewportBottom >= pageBottom - 4) {
+          nextActiveSectionId = sectionData[sectionData.length - 1].id;
+        } else {
+          const trackingLine = scrollY + 180;
+          let smallestDistance = Infinity;
 
-      if (viewportBottom >= pageBottom - 4) {
-        setActiveSectionId(sectionData[sectionData.length - 1].id);
-        return;
-      }
+          sections.forEach((section) => {
+            const rectTop = section.offsetTop;
+            const distance = Math.abs(rectTop - trackingLine);
 
-      const trackingLine = scrollY + 180;
-
-      let currentId = "";
-      let smallestDistance = Infinity;
-
-      sections.forEach((section) => {
-        const rectTop = section.offsetTop;
-        const distance = Math.abs(rectTop - trackingLine);
-
-        if (distance < smallestDistance) {
-          smallestDistance = distance;
-          currentId = section.id;
+            if (distance < smallestDistance) {
+              smallestDistance = distance;
+              nextActiveSectionId = section.id;
+            }
+          });
         }
-      });
+      }
 
-      setActiveSectionId(currentId);
+      setActiveSectionId((prev) =>
+        prev === nextActiveSectionId ? prev : nextActiveSectionId
+      );
+      ticking = false;
     };
 
-    handleScroll();
-    window.addEventListener("scroll", handleScroll);
+    const handleScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(updateActiveSection);
+    };
+
+    updateActiveSection();
+    window.addEventListener("scroll", handleScroll, { passive: true });
 
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -2789,14 +2795,14 @@ export default function ProfessionalProfile() {
         const normalizedWorkExperiences = (data.workExperiences || []).map(
           (item) => ({
             ...item,
-            id: item.id || item._id || Date.now() + Math.random(),
+            id: item.id || item._id || createLocalId(),
           })
         );
 
         const normalizedEducationItems = (data.educationItems || []).map(
           (item) => ({
             ...item,
-            id: item.id || item._id || Date.now() + Math.random(),
+            id: item.id || item._id || createLocalId(),
           })
         );
 
@@ -2806,17 +2812,17 @@ export default function ProfessionalProfile() {
         setProfile(loadedProfile);
         setFormData(loadedProfile);
         setTargetJob(normalizedTargetJob);
-        setTargetJobForm(normalizedTargetJob);
+        setTargetJobForm({ ...normalizedTargetJob });
         setWorkExperiences(normalizedWorkExperiences);
-        setWorkExperienceDraft(normalizedWorkExperiences);
+        setWorkExperienceDraft(normalizedWorkExperiences.map((item) => ({ ...item })));
         setSkills(data.skills || []);
-        setSkillsDraft(data.skills || []);
+        setSkillsDraft([...(data.skills || [])]);
         setLanguages(data.languages || []);
-        setLanguagesDraft(data.languages || []);
+        setLanguagesDraft([...(data.languages || [])]);
         setEducationItems(normalizedEducationItems);
-        setEducationDraft(normalizedEducationItems);
+        setEducationDraft(normalizedEducationItems.map((item) => ({ ...item })));
         setOtherAssets(normalizedOtherAssets);
-        setOtherAssetsForm(normalizedOtherAssets);
+        setOtherAssetsForm({ ...normalizedOtherAssets });
       } catch (error) {
         console.error("Failed to fetch profile:", error);
       } finally {
@@ -2921,19 +2927,19 @@ export default function ProfessionalProfile() {
   };
 
   const openTargetJobModal = () => {
-    setTargetJobForm(targetJob);
+    setTargetJobForm({ ...targetJob });
     setTargetJobErrors({});
     setIsTargetJobModalOpen(true);
   };
 
   const closeTargetJobModal = () => {
-    setTargetJobForm(targetJob);
+    setTargetJobForm({ ...targetJob });
     setTargetJobErrors({});
     setIsTargetJobModalOpen(false);
   };
 
   const openWorkExperienceModal = () => {
-    setWorkExperienceDraft(workExperiences);
+    setWorkExperienceDraft(workExperiences.map((item) => ({ ...item })));
     setWorkExperienceForm(initialExperienceForm);
     setWorkExperienceErrors({});
     setEditingExperienceId(null);
@@ -2942,7 +2948,7 @@ export default function ProfessionalProfile() {
   };
 
   const closeWorkExperienceModal = () => {
-    setWorkExperienceDraft(workExperiences);
+    setWorkExperienceDraft(workExperiences.map((item) => ({ ...item })));
     setWorkExperienceForm(initialExperienceForm);
     setWorkExperienceErrors({});
     setEditingExperienceId(null);
@@ -2951,7 +2957,7 @@ export default function ProfessionalProfile() {
   };
 
   const openEducationModal = () => {
-    setEducationDraft(educationItems);
+    setEducationDraft(educationItems.map((item) => ({ ...item })));
     setEducationForm(initialEducationForm);
     setEducationErrors({});
     setEditingEducationId(null);
@@ -2960,7 +2966,7 @@ export default function ProfessionalProfile() {
   };
 
   const closeEducationModal = () => {
-    setEducationDraft(educationItems);
+    setEducationDraft(educationItems.map((item) => ({ ...item })));
     setEducationForm(initialEducationForm);
     setEducationErrors({});
     setEditingEducationId(null);
@@ -2969,37 +2975,37 @@ export default function ProfessionalProfile() {
   };
 
   const openOtherAssetsModal = () => {
-    setOtherAssetsForm(otherAssets);
+    setOtherAssetsForm({ ...otherAssets });
     setOtherAssetsErrors({});
     setIsOtherAssetsModalOpen(true);
   };
 
   const closeOtherAssetsModal = () => {
-    setOtherAssetsForm(otherAssets);
+    setOtherAssetsForm({ ...otherAssets });
     setOtherAssetsErrors({});
     setIsOtherAssetsModalOpen(false);
   };
 
   const openSkillsModal = () => {
-    setSkillsDraft(skills);
+    setSkillsDraft([...skills]);
     setSkillsSearch("");
     setIsSkillsModalOpen(true);
   };
 
   const closeSkillsModal = () => {
-    setSkillsDraft(skills);
+    setSkillsDraft([...skills]);
     setSkillsSearch("");
     setIsSkillsModalOpen(false);
   };
 
   const openLanguagesModal = () => {
-    setLanguagesDraft(languages);
+    setLanguagesDraft([...languages]);
     setLanguagesSearch("");
     setIsLanguagesModalOpen(true);
   };
 
   const closeLanguagesModal = () => {
-    setLanguagesDraft(languages);
+    setLanguagesDraft([...languages]);
     setLanguagesSearch("");
     setIsLanguagesModalOpen(false);
   };
@@ -3037,30 +3043,38 @@ export default function ProfessionalProfile() {
   };
 
   const validateEducationForm = () => {
-    const errors = {};
+  const errors = {};
 
-    if (!educationForm.title.trim()) {
-      errors.title = "Title is required.";
-    }
+  if (!educationForm.title.trim()) {
+    errors.title = "Title is required.";
+  }
 
-    if (!educationForm.fromDate) {
-      errors.fromDate = "From date is required.";
-    }
+  if (!educationForm.level.trim()) {
+    errors.level = "Level is required.";
+  }
 
-    if (!educationForm.currentlyStudying && !educationForm.toDate) {
-      errors.toDate = "To date is required unless you are still studying here.";
-    }
+  if (!educationForm.institution.trim()) {
+    errors.institution = "Institution is required.";
+  }
 
-    if (
-      educationForm.fromDate &&
-      educationForm.toDate &&
-      educationForm.fromDate > educationForm.toDate
-    ) {
-      errors.toDate = "To date cannot be earlier than From date.";
-    }
+  if (!educationForm.fromDate) {
+    errors.fromDate = "From date is required.";
+  }
 
-    return errors;
-  };
+  if (!educationForm.currentlyStudying && !educationForm.toDate) {
+    errors.toDate = "To date is required unless you are still studying here.";
+  }
+
+  if (
+    educationForm.fromDate &&
+    educationForm.toDate &&
+    educationForm.fromDate > educationForm.toDate
+  ) {
+    errors.toDate = "To date cannot be earlier than From date.";
+  }
+
+  return errors;
+};
 
   const handleSaveEducationItem = () => {
     const errors = validateEducationForm();
@@ -3071,7 +3085,7 @@ export default function ProfessionalProfile() {
     }
 
     const cleanedItem = {
-      id: editingEducationId ?? Date.now(),
+      id: editingEducationId ?? createLocalId(),
       title: educationForm.title.trim(),
       level: educationForm.level.trim(),
       institution: educationForm.institution.trim(),
@@ -3127,9 +3141,11 @@ export default function ProfessionalProfile() {
       setEducationForm(initialEducationForm);
       setEditingEducationId(null);
       setEducationErrors({});
+      setIsEducationFormVisible(nextDraft.length === 0);
+      return;
     }
 
-    setIsEducationFormVisible(nextDraft.length === 0);
+    setIsEducationFormVisible((prev) => prev || nextDraft.length === 0);
   };
 
   const handleStartNewEducation = () => {
@@ -3326,6 +3342,8 @@ export default function ProfessionalProfile() {
   };
 
   const handleProfileSave = async () => {
+    if (isSavingProfile) return;
+
     const errors = validateProfileForm();
 
     if (Object.keys(errors).length > 0) {
@@ -3344,12 +3362,9 @@ export default function ProfessionalProfile() {
       gender: formData.gender.trim(),
     };
 
-    const payload = buildFullProfilePayload({
-      profileOverride: updatedProfile,
-    });
-
     try {
-      await persistProfile(payload);
+      setIsSavingProfile(true);
+      await persistProfile(updatedProfile);
       setProfile(updatedProfile);
       setFormData(updatedProfile);
       setFormErrors({});
@@ -3357,10 +3372,14 @@ export default function ProfessionalProfile() {
     } catch (error) {
       console.error("Error saving profile:", error);
       alert("Failed to save profile.");
+    } finally {
+      setIsSavingProfile(false);
     }
   };
 
   const handleTargetJobSave = async () => {
+    if (isSavingTargetJob) return;
+
     const errors = validateTargetJobForm();
 
     if (Object.keys(errors).length > 0) {
@@ -3383,18 +3402,17 @@ export default function ProfessionalProfile() {
       ? cleanedData
       : initialTargetJob;
 
-    const payload = buildFullProfilePayload({
-      targetJobOverride: finalTargetJob,
-    });
-
     try {
-      await persistProfile(payload);
+      setIsSavingTargetJob(true);
+      await persistProfile({ targetJob: finalTargetJob });
       setTargetJob(finalTargetJob);
-      setTargetJobForm(finalTargetJob);
+      setTargetJobForm({ ...finalTargetJob });
       setTargetJobErrors({});
       setIsTargetJobModalOpen(false);
     } catch (error) {
       console.error("Error saving target job:", error);
+    } finally {
+      setIsSavingTargetJob(false);
     }
   };
 
@@ -3407,7 +3425,7 @@ export default function ProfessionalProfile() {
     }
 
     const cleanedItem = {
-      id: editingExperienceId ?? Date.now(),
+      id: editingExperienceId ?? createLocalId(),
       jobTitle: workExperienceForm.jobTitle.trim(),
       companyName: workExperienceForm.companyName.trim(),
       employmentType: workExperienceForm.employmentType.trim(),
@@ -3467,9 +3485,11 @@ export default function ProfessionalProfile() {
       setWorkExperienceForm(initialExperienceForm);
       setEditingExperienceId(null);
       setWorkExperienceErrors({});
+      setIsWorkExperienceFormVisible(nextDraft.length === 0);
+      return;
     }
 
-    setIsWorkExperienceFormVisible(nextDraft.length === 0);
+    setIsWorkExperienceFormVisible((prev) => prev || nextDraft.length === 0);
   };
 
   const handleStartNewExperience = () => {
@@ -3480,13 +3500,12 @@ export default function ProfessionalProfile() {
   };
 
   const handleSaveAllExperiences = async () => {
-    const payload = buildFullProfilePayload({
-      workExperiencesOverride: workExperienceDraft,
-    });
+    if (isSavingWorkExperiences) return;
 
     try {
-      await persistProfile(payload);
-      setWorkExperiences(workExperienceDraft);
+      setIsSavingWorkExperiences(true);
+      await persistProfile({ workExperiences: workExperienceDraft });
+      setWorkExperiences(workExperienceDraft.map((item) => ({ ...item })));
       setIsWorkExperienceModalOpen(false);
       setWorkExperienceForm(initialExperienceForm);
       setWorkExperienceErrors({});
@@ -3494,6 +3513,8 @@ export default function ProfessionalProfile() {
       setIsWorkExperienceFormVisible(true);
     } catch (error) {
       console.error("Error saving work experiences:", error);
+    } finally {
+      setIsSavingWorkExperiences(false);
     }
   };
 
@@ -3510,43 +3531,44 @@ export default function ProfessionalProfile() {
   };
 
   const handleSaveSkills = async () => {
-    const payload = buildFullProfilePayload({
-      skillsOverride: skillsDraft,
-    });
+    if (isSavingSkills) return;
 
     try {
-      await persistProfile(payload);
-      setSkills(skillsDraft);
+      setIsSavingSkills(true);
+      await persistProfile({ skills: skillsDraft });
+      setSkills([...skillsDraft]);
       setSkillsSearch("");
       setIsSkillsModalOpen(false);
     } catch (error) {
       console.error("Error saving skills:", error);
+    } finally {
+      setIsSavingSkills(false);
     }
   };
 
   const handleSaveLanguages = async () => {
-    const payload = buildFullProfilePayload({
-      languagesOverride: languagesDraft,
-    });
+    if (isSavingLanguages) return;
 
     try {
-      await persistProfile(payload);
-      setLanguages(languagesDraft);
+      setIsSavingLanguages(true);
+      await persistProfile({ languages: languagesDraft });
+      setLanguages([...languagesDraft]);
       setLanguagesSearch("");
       setIsLanguagesModalOpen(false);
     } catch (error) {
       console.error("Error saving languages:", error);
+    } finally {
+      setIsSavingLanguages(false);
     }
   };
 
   const handleSaveAllEducation = async () => {
-    const payload = buildFullProfilePayload({
-      educationItemsOverride: educationDraft,
-    });
+    if (isSavingEducation) return;
 
     try {
-      await persistProfile(payload);
-      setEducationItems(educationDraft);
+      setIsSavingEducation(true);
+      await persistProfile({ educationItems: educationDraft });
+      setEducationItems(educationDraft.map((item) => ({ ...item })));
       setIsEducationModalOpen(false);
       setEducationForm(initialEducationForm);
       setEducationErrors({});
@@ -3554,10 +3576,14 @@ export default function ProfessionalProfile() {
       setIsEducationFormVisible(true);
     } catch (error) {
       console.error("Error saving education:", error);
+    } finally {
+      setIsSavingEducation(false);
     }
   };
 
   const handleSaveOtherAssets = async () => {
+    if (isSavingOtherAssets) return;
+
     const cleanedData = {
       linkedin: otherAssetsForm.linkedin.trim(),
       github: otherAssetsForm.github.trim(),
@@ -3587,18 +3613,17 @@ export default function ProfessionalProfile() {
       ? cleanedData
       : initialOtherAssets;
 
-    const payload = buildFullProfilePayload({
-      otherAssetsOverride: finalOtherAssets,
-    });
-
     try {
-      await persistProfile(payload);
+      setIsSavingOtherAssets(true);
+      await persistProfile({ otherAssets: finalOtherAssets });
       setOtherAssets(finalOtherAssets);
-      setOtherAssetsForm(finalOtherAssets);
+      setOtherAssetsForm({ ...finalOtherAssets });
       setOtherAssetsErrors({});
       setIsOtherAssetsModalOpen(false);
     } catch (error) {
       console.error("Error saving other assets:", error);
+    } finally {
+      setIsSavingOtherAssets(false);
     }
   };
 

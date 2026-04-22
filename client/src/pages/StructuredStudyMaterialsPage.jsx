@@ -69,8 +69,10 @@ const StructuredStudyMaterialsPage = () => {
                     {yearModules.length} modules
                   </div>
                 </div>
+
+                {/* 🔽 SMALL MODERN ICON */}
                 <span className={`year-accordion-toggle ${isExpanded ? 'open' : ''}`}>
-                  ▼
+                  ⌄
                 </span>
               </button>
 

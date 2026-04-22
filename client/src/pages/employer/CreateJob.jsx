@@ -23,7 +23,7 @@ const EMPTY_FORM = {
     responsibilitiesText: '',
     requirementsText: '',
     skillsText: '',
-    screeningQuestionsText: '',
+    screeningQuestionsText: [''],
     deadline: '',
 };
 
@@ -44,41 +44,49 @@ const CreateJob = () => {
     const { user } = useAuth();
 
     const validate = () => {
-        let tempErrors = {};
-        if (!formData.title) tempErrors.title = 'Title is required';
-        if (!formData.company) tempErrors.company = 'Company is required';
-        if (!formData.location) tempErrors.location = 'Location is required';
-        if (!formData.overview) tempErrors.overview = 'Overview is required';
-        if (!formData.description) tempErrors.description = 'Description is required';
-        if (!formData.applyLink) tempErrors.applyLink = 'Apply link is required';
-        else if (!formData.applyLink.startsWith('http')) tempErrors.applyLink = 'Apply link must start with http:// or https://';
-        if (formData.logo && !formData.logo.startsWith('http')) {
-            tempErrors.logo = 'Logo URL must start with http:// or https://';
-        }
+    let tempErrors = {};
+    const textOnlyRegex = /^[A-Za-z\s]+$/;
 
-        const responsibilities = toLineArray(formData.responsibilitiesText);
-        const requirements = toLineArray(formData.requirementsText);
+    if (!formData.title) tempErrors.title = 'Title is required';
 
-        if (responsibilities.length === 0) {
-            tempErrors.responsibilitiesText = 'Add at least one responsibility (one per line)';
-        }
-        if (requirements.length === 0) {
-            tempErrors.requirementsText = 'Add at least one requirement (one per line)';
-        }
+    if (!formData.company) {
+        tempErrors.company = 'Company is required';
+    } else if (!textOnlyRegex.test(formData.company)) {
+        tempErrors.company = 'Numbers and symbols are not allowed';
+    }
 
-        if (!formData.deadline) {
-            tempErrors.deadline = 'Deadline is required';
-        } else {
-            const deadlineDate = new Date(formData.deadline);
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            if (deadlineDate <= today) {
-                tempErrors.deadline = 'Deadline must be a future date';
-            }
-        }
-        setErrors(tempErrors);
-        return Object.keys(tempErrors).length === 0;
-    };
+    if (!formData.location) tempErrors.location = 'Location is required';
+    if (!formData.overview) tempErrors.overview = 'Overview is required';
+    if (!formData.description) tempErrors.description = 'Description is required';
+
+    if (!formData.applyLink) {
+        tempErrors.applyLink = 'Apply link is required';
+    } else if (!formData.applyLink.startsWith('http')) {
+        tempErrors.applyLink = 'Apply link must start with http:// or https://';
+    }
+
+    if (formData.logo && !formData.logo.startsWith('http')) {
+        tempErrors.logo = 'Logo URL must start with http:// or https://';
+    }
+
+    const responsibilities = toLineArray(formData.responsibilitiesText);
+    const requirements = toLineArray(formData.requirementsText);
+
+    if (responsibilities.length === 0) {
+        tempErrors.responsibilitiesText = 'Add at least one responsibility';
+    }
+
+    if (requirements.length === 0) {
+        tempErrors.requirementsText = 'Add at least one requirement';
+    }
+
+    if (!formData.deadline) {
+        tempErrors.deadline = 'Deadline is required';
+    }
+
+    setErrors(tempErrors);
+    return Object.keys(tempErrors).length === 0;
+};
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -352,8 +360,7 @@ const CreateJob = () => {
                             placeholder={'React\nNode.js\nSQL\nCommunication'}
                         ></textarea>
                     </div>
-
-                    <div className="form-group" style={{ marginBottom: '24px' }}>
+                     <div className="form-group" style={{ marginBottom: '24px' }}>
                         <label>Screening Questions (one per line)</label>
                         <textarea
                             value={formData.screeningQuestionsText}

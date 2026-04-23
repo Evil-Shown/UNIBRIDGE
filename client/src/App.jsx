@@ -103,7 +103,7 @@ function App() {
                 <Route path="job-portal/jobs/:id" element={<><JobPortalDetail /><Footer /></>} />
                 <Route path="job-portal/saved" element={<><JobPortalSaved /><Footer /></>} />
                 <Route path="job-portal/applications" element={<><JobPortalApplications /><Footer /></>} />
-                <Route path="profile/professional" element={<ProfessionalProfile />} />
+                <Route path="profile/professional" element={<><ProfessionalProfile /><Footer /></>} />
                 <Route path="notifications" element={<AlertsPage />} />
 
 

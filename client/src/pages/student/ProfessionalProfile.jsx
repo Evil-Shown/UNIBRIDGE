@@ -407,6 +407,8 @@ const initialProfile = {
   gender: "",
   profilePicture: null,
   profilePictureName: "",
+  isAvailable: false,
+  availabilityStatus: "not-available",
 };
 
 const initialTargetJob = {
@@ -473,6 +475,22 @@ const STATUS_OPTIONS = [
     colorClass: "green",
   },
 ];
+
+const getStatusOptionByValue = (value) =>
+  STATUS_OPTIONS.find((item) => item.value === value) || STATUS_OPTIONS[0];
+
+const isRecruiterVisibleStatus = (value) => value !== "not-available";
+
+const normalizeAvailabilityStatus = (value, isAvailable = false) => {
+  if (STATUS_OPTIONS.some((item) => item.value === value)) {
+    if (value === "not-available" && isAvailable) {
+      return "open-opportunities";
+    }
+    return value;
+  }
+
+  return isAvailable ? "open-opportunities" : "not-available";
+};
 
 function formatDisplayValue(value) {
   return value?.trim() ? value : "Not filled";
@@ -586,15 +604,11 @@ function formatEducationDateRange(item) {
   return `${start} - ${end}`;
 }
 
-function StatusCard() {
+function StatusCard({ statusValue, onStatusChange }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [selectedStatus, setSelectedStatus] = useState(() => {
-    const savedValue = localStorage.getItem("myspace-status");
-    return (
-      STATUS_OPTIONS.find((item) => item.value === savedValue) ||
-      STATUS_OPTIONS[0]
-    );
-  });
+  const [selectedStatus, setSelectedStatus] = useState(() =>
+    getStatusOptionByValue(statusValue)
+  );
   const dropdownRef = useRef(null);
 
   useEffect(() => {
@@ -610,6 +624,10 @@ function StatusCard() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  useEffect(() => {
+    setSelectedStatus(getStatusOptionByValue(statusValue));
+  }, [statusValue]);
 
   useEffect(() => {
     localStorage.setItem("myspace-status", selectedStatus.value);
@@ -654,6 +672,7 @@ function StatusCard() {
                 onClick={() => {
                   setSelectedStatus(option);
                   setIsDropdownOpen(false);
+                  onStatusChange(option);
                 }}
               >
                 <div className="status-dropdown-option-top">
@@ -2711,6 +2730,35 @@ export default function ProfessionalProfile() {
     };
   }, [profile.profilePicture]);
 
+  const handleStatusChange = async (nextStatusOption) => {
+    const nextAvailabilityStatus = nextStatusOption.value;
+    const nextIsAvailable = isRecruiterVisibleStatus(nextAvailabilityStatus);
+    const previousAvailabilityStatus = profile.availabilityStatus;
+    const previousIsAvailable = profile.isAvailable;
+
+    localStorage.setItem("myspace-status", nextAvailabilityStatus);
+    setProfile((prev) => ({
+      ...prev,
+      availabilityStatus: nextAvailabilityStatus,
+      isAvailable: nextIsAvailable,
+    }));
+
+    try {
+      await persistProfile({
+        availabilityStatus: nextAvailabilityStatus,
+        isAvailable: nextIsAvailable,
+      });
+    } catch (error) {
+      console.error("Failed to update availability status:", error);
+      localStorage.setItem("myspace-status", previousAvailabilityStatus);
+      setProfile((prev) => ({
+        ...prev,
+        availabilityStatus: previousAvailabilityStatus,
+        isAvailable: previousIsAvailable,
+      }));
+    }
+  };
+
   const handleSidebarNavigate = (id) => {
     const section = document.getElementById(id);
     if (!section) return;
@@ -2829,6 +2877,17 @@ export default function ProfessionalProfile() {
       try {
         const response = await axios.get("http://localhost:5000/api/uni/students/profile");
         const data = response.data || {};
+        const savedStatus = localStorage.getItem("myspace-status");
+        const backendStatus = normalizeAvailabilityStatus(
+          data.availabilityStatus,
+          data.isAvailable
+        );
+        const resolvedAvailabilityStatus = data.availabilityStatus
+          ? backendStatus
+          : normalizeAvailabilityStatus(savedStatus, data.isAvailable);
+        const resolvedIsAvailable = isRecruiterVisibleStatus(
+          resolvedAvailabilityStatus
+        );
 
         const loadedProfile = {
           firstName: data.firstName || "",
@@ -2840,6 +2899,8 @@ export default function ProfessionalProfile() {
           gender: data.gender || "",
           profilePicture: data.profilePicture || null,
           profilePictureName: data.profilePictureName || "",
+          availabilityStatus: resolvedAvailabilityStatus,
+          isAvailable: resolvedIsAvailable,
         };
 
         const normalizedWorkExperiences = (data.workExperiences || []).map(
@@ -2873,6 +2934,16 @@ export default function ProfessionalProfile() {
         setEducationDraft(normalizedEducationItems.map((item) => ({ ...item })));
         setOtherAssets(normalizedOtherAssets);
         setOtherAssetsForm({ ...normalizedOtherAssets });
+
+        if (
+          resolvedAvailabilityStatus !== backendStatus ||
+          resolvedIsAvailable !== Boolean(data.isAvailable)
+        ) {
+          await persistProfile({
+            availabilityStatus: resolvedAvailabilityStatus,
+            isAvailable: resolvedIsAvailable,
+          });
+        }
       } catch (error) {
         console.error("Failed to fetch profile:", error);
       } finally {
@@ -3687,7 +3758,10 @@ export default function ProfessionalProfile() {
         <div className="myspace-shell">
           <aside className="myspace-left">
             <div className="fixed-sidebar">
-              <StatusCard />
+              <StatusCard
+                statusValue={profile.availabilityStatus}
+                onStatusChange={handleStatusChange}
+              />
               <Sidebar
                 activeSectionId={activeSectionId}
                 onNavigate={handleSidebarNavigate}

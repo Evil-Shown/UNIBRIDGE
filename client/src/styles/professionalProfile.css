@@ -56,15 +56,17 @@
 
 .myspace-page .myspace-left {
   position: sticky;
-  top: 96px;
+  top: 92px;
   align-self: start;
   min-width: 0;
+  max-height: calc(100vh - 108px);
 }
 
 .myspace-page .fixed-sidebar {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 14px;
+  max-height: calc(100vh - 108px);
 }
 
 .myspace-page .myspace-right {
@@ -72,6 +74,60 @@
   flex-direction: column;
   gap: 24px;
   min-width: 0;
+  padding-bottom: max(380px, 46vh);
+}
+
+.myspace-page .myspace-right > .info-card {
+  scroll-margin-top: 132px;
+}
+
+@media (min-width: 993px) {
+  .myspace-page {
+    height: 100vh;
+    min-height: 100vh;
+    overflow: hidden;
+    padding-bottom: 24px;
+  }
+
+  .myspace-page .container {
+    height: 100%;
+  }
+
+  .myspace-page .myspace-shell {
+    height: calc(100vh - 136px);
+  }
+
+  .myspace-page .myspace-left {
+    position: relative;
+    top: 0;
+    height: 100%;
+    max-height: none;
+  }
+
+  .myspace-page .fixed-sidebar {
+    height: 100%;
+    max-height: none;
+  }
+
+  .myspace-page .myspace-right {
+    height: 100%;
+    overflow-y: auto;
+    padding-right: 6px;
+    padding-bottom: max(260px, 38vh);
+    scrollbar-gutter: stable;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .myspace-page .myspace-right::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
+  }
+
+  .myspace-page .myspace-right > .info-card {
+    scroll-margin-top: 0;
+  }
 }
 
 /* =========================
@@ -93,21 +149,21 @@
    ========================= */
 
 .myspace-page .status-card {
-  padding: 22px 20px;
+  padding: 18px 18px;
 }
 
 .myspace-page .status-title {
-  margin: 0 0 14px;
-  font-size: 22px;
+  margin: 0 0 10px;
+  font-size: 20px;
   line-height: 1.15;
   font-weight: 800;
   color: var(--pp-text);
 }
 
 .myspace-page .status-description {
-  margin: 0 0 18px;
-  font-size: 16px;
-  line-height: 1.5;
+  margin: 0 0 14px;
+  font-size: 15px;
+  line-height: 1.38;
   color: var(--pp-text-soft);
 }
 
@@ -124,7 +180,7 @@
 
 .myspace-page .status-select {
   width: 100%;
-  min-height: 50px;
+  min-height: 48px;
   border: 1px solid var(--pp-border-strong);
   border-radius: 12px;
   background: #fff;
@@ -233,7 +289,7 @@
 }
 
 .myspace-page .status-note {
-  margin-top: 18px;
+  margin-top: 14px;
   display: flex;
   align-items: flex-start;
   gap: 12px;
@@ -241,7 +297,7 @@
 }
 
 .myspace-page .status-note-icon {
-  font-size: 28px;
+  font-size: 24px;
   color: var(--pp-primary-2);
   flex-shrink: 0;
   margin-top: 2px;
@@ -249,8 +305,8 @@
 
 .myspace-page .status-note p {
   margin: 0;
-  font-size: 14px;
-  line-height: 1.45;
+  font-size: 13.5px;
+  line-height: 1.38;
 }
 
 /* =========================
@@ -263,7 +319,7 @@
 
 .myspace-page .sidebar-card-title {
   margin: 0;
-  padding: 18px 18px 12px;
+  padding: 16px 18px 10px;
   font-size: 16px;
   font-weight: 700;
   color: var(--pp-text-soft);
@@ -272,15 +328,15 @@
 .myspace-page .sidebar-nav {
   display: flex;
   flex-direction: column;
-  padding-bottom: 10px;
+  padding-bottom: 8px;
 }
 
 .myspace-page .sidebar-link {
   text-decoration: none;
   color: var(--pp-text-soft);
-  font-size: 16px;
-  line-height: 1.35;
-  padding: 14px 18px;
+  font-size: 15.5px;
+  line-height: 1.28;
+  padding: 11px 18px;
   border-left: 4px solid transparent;
   transition: 0.2s ease;
 }
@@ -1883,6 +1939,53 @@
   .myspace-page .myspace-left {
     position: static;
     top: auto;
+    max-height: none;
+  }
+
+  .myspace-page .fixed-sidebar {
+    max-height: none;
+  }
+
+  .myspace-page .status-card {
+    padding: 22px 20px;
+  }
+
+  .myspace-page .status-title {
+    margin-bottom: 14px;
+    font-size: 22px;
+  }
+
+  .myspace-page .status-description {
+    margin-bottom: 18px;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  .myspace-page .status-note {
+    margin-top: 18px;
+  }
+
+  .myspace-page .status-note-icon {
+    font-size: 28px;
+  }
+
+  .myspace-page .status-note p {
+    font-size: 14px;
+    line-height: 1.45;
+  }
+
+  .myspace-page .sidebar-card-title {
+    padding: 18px 18px 12px;
+  }
+
+  .myspace-page .sidebar-nav {
+    padding-bottom: 10px;
+  }
+
+  .myspace-page .sidebar-link {
+    font-size: 16px;
+    line-height: 1.35;
+    padding: 14px 18px;
   }
 
   .myspace-page .profile-form-grid,

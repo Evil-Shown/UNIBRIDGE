@@ -70,7 +70,9 @@ const sectionData = [
   },
 ];
 
-const SCROLL_OFFSET = 24;
+const PROFILE_NAV_SCROLL_OFFSET = 132;
+const PROFILE_ACTIVE_LINE_OFFSET = 150;
+const PROFILE_MANUAL_NAV_LOCK_MS = 800;
 const MAX_IMAGE_SIZE = 4 * 1024 * 1024;
 const TARGET_JOB_CHARACTER_LIMIT = 300;
 const CURRENT_MONTH = new Date().toISOString().slice(0, 7);
@@ -681,22 +683,10 @@ function StatusCard() {
   );
 }
 
-function Sidebar({ activeSectionId, setActiveSectionId }) {
+function Sidebar({ activeSectionId, onNavigate }) {
   const handleNavClick = (e, id) => {
     e.preventDefault();
-
-    const section = document.getElementById(id);
-    if (!section) return;
-
-    setActiveSectionId(id);
-
-    const top =
-      section.getBoundingClientRect().top + window.scrollY - 120;
-
-    window.scrollTo({
-      top,
-      behavior: "auto",
-    });
+    onNavigate(id);
   };
 
   return (
@@ -2651,6 +2641,8 @@ export default function ProfessionalProfile() {
   const { user } = useAuth();
   const loggedEmail = user?.email || "";
   const [isProfileLoading, setIsProfileLoading] = useState(true);
+  const manualNavLockUntilRef = useRef(0);
+  const rightPaneRef = useRef(null);
 
   const [activeSectionId, setActiveSectionId] = useState("");
   const [profile, setProfile] = useState({ ...initialProfile, email: loggedEmail });
@@ -2719,12 +2711,68 @@ export default function ProfessionalProfile() {
     };
   }, [profile.profilePicture]);
 
+  const handleSidebarNavigate = (id) => {
+    const section = document.getElementById(id);
+    if (!section) return;
+
+    manualNavLockUntilRef.current = Date.now() + PROFILE_MANUAL_NAV_LOCK_MS;
+    setActiveSectionId(id);
+
+    const rightPane = rightPaneRef.current;
+    const usesRightPaneScroll =
+      rightPane && window.matchMedia("(min-width: 993px)").matches;
+
+    if (usesRightPaneScroll) {
+      const top =
+        section.getBoundingClientRect().top -
+        rightPane.getBoundingClientRect().top +
+        rightPane.scrollTop;
+
+      rightPane.scrollTo({
+        top: Math.max(0, top),
+        behavior: "auto",
+      });
+      return;
+    }
+
+    const top =
+      section.getBoundingClientRect().top + window.scrollY - PROFILE_NAV_SCROLL_OFFSET;
+
+    window.scrollTo({
+      top: Math.max(0, top),
+      behavior: "auto",
+    });
+  };
+
   useEffect(() => {
+    if (isProfileLoading) return undefined;
+
     let ticking = false;
 
     const updateActiveSection = () => {
+      if (Date.now() < manualNavLockUntilRef.current) {
+        ticking = false;
+        return;
+      }
+
+      const rightPane = rightPaneRef.current;
+      const usesRightPaneScroll =
+        rightPane && window.matchMedia("(min-width: 993px)").matches;
+      const activationLine = usesRightPaneScroll
+        ? rightPane.getBoundingClientRect().top +
+          Math.min(PROFILE_ACTIVE_LINE_OFFSET, rightPane.clientHeight * 0.28)
+        : PROFILE_ACTIVE_LINE_OFFSET;
+
       const sections = sectionData
-        .map((section) => document.getElementById(section.id))
+        .map((section) => {
+          const element = document.getElementById(section.id);
+          if (!element) return null;
+
+          return {
+            id: section.id,
+            top: element.getBoundingClientRect().top,
+          };
+        })
         .filter(Boolean);
 
       if (!sections.length) {
@@ -2732,27 +2780,21 @@ export default function ProfessionalProfile() {
         return;
       }
 
-      const scrollY = window.scrollY;
-      const pageBottom = document.documentElement.scrollHeight;
-      const viewportBottom = scrollY + window.innerHeight;
       let nextActiveSectionId = "";
 
-      if (scrollY >= 120) {
-        if (viewportBottom >= pageBottom - 4) {
-          nextActiveSectionId = sectionData[sectionData.length - 1].id;
-        } else {
-          const trackingLine = scrollY + 180;
-          let smallestDistance = Infinity;
+      const isAtRightPaneBottom =
+        usesRightPaneScroll &&
+        rightPane.scrollTop + rightPane.clientHeight >= rightPane.scrollHeight - 4;
 
-          sections.forEach((section) => {
-            const rectTop = section.offsetTop;
-            const distance = Math.abs(rectTop - trackingLine);
-
-            if (distance < smallestDistance) {
-              smallestDistance = distance;
-              nextActiveSectionId = section.id;
-            }
-          });
+      if (isAtRightPaneBottom) {
+        nextActiveSectionId = sections[sections.length - 1].id;
+      } else {
+        for (const section of sections) {
+          if (section.top <= activationLine) {
+            nextActiveSectionId = section.id;
+          } else {
+            break;
+          }
         }
       }
 
@@ -2769,10 +2811,18 @@ export default function ProfessionalProfile() {
     };
 
     updateActiveSection();
-    window.addEventListener("scroll", handleScroll, { passive: true });
+    const rightPane = rightPaneRef.current;
 
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    rightPane?.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      rightPane?.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleScroll);
+    };
+  }, [isProfileLoading]);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -3640,12 +3690,12 @@ export default function ProfessionalProfile() {
               <StatusCard />
               <Sidebar
                 activeSectionId={activeSectionId}
-                setActiveSectionId={setActiveSectionId}
+                onNavigate={handleSidebarNavigate}
               />
             </div>
           </aside>
 
-          <main className="myspace-right">
+          <main className="myspace-right" ref={rightPaneRef}>
             <TopOverviewCard
               profile={profile}
               targetJob={targetJob}

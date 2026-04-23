@@ -1,176 +1,140 @@
-/* Structured Study Materials Page */
+/* 🌈 Structured Study Materials Page */
 
 .structured-materials-container {
   padding: 100px 24px 60px;
   max-width: 1100px;
   margin: 0 auto;
   min-height: 100vh;
-  background: #f8fafc;
+  background: linear-gradient(135deg, #f0f9ff, #f8fafc);
 }
 
+/* 🌟 Header */
 .structured-materials-header {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
+  background: linear-gradient(135deg, #6366f1, #06b6d4);
+  color: white;
   border-radius: 0.75rem;
   padding: 2rem;
   margin-bottom: 2rem;
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+  box-shadow: 0 10px 25px rgba(99, 102, 241, 0.2);
 }
 
 .structured-materials-header h1 {
   font-size: 1.875rem;
   font-weight: 600;
-  color: #0f172a;
   margin: 0;
 }
 
 .structured-materials-header p {
-  color: #475569;
   font-size: 0.875rem;
-  margin: 0.5rem 0 0 0;
+  margin-top: 0.5rem;
+  opacity: 0.9;
 }
 
+/* 🌟 Grid */
 .years-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.25rem;
+  gap: 1.5rem;
 }
 
+/* 🎴 Card */
 .year-accordion {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
+  background: white;
   border-radius: 0.75rem;
   overflow: hidden;
-  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
-  transition: all 0.2s ease;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
 }
 
 .year-accordion:hover {
-  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
-  border-color: #cbd5e1;
+  transform: translateY(-4px);
 }
 
+/* 🌈 Header */
 .year-accordion-header {
-  background: #f1f5f9;
-  color: #1e293b;
-  padding: 1.2rem 1.25rem;
+  background: linear-gradient(135deg, #4f46e5, #06b6d4);
+  color: white;
+  padding: 1.2rem;
   cursor: pointer;
   display: flex;
-  align-items: center;
   justify-content: space-between;
   border: none;
-  width: 100%;
-  font-size: 1rem;
-  font-weight: 600;
-  transition: background 0.2s ease;
 }
 
 .year-accordion-header:hover {
-  background: #e2e8f0;
-}
-
-.year-accordion-title {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin: 0;
+  background: linear-gradient(135deg, #4338ca, #0891b2);
 }
 
 .year-accordion-title span {
   font-size: 1rem;
   font-weight: 600;
-  color: #0f172a;
 }
 
 .year-accordion-subtitle {
   font-size: 0.75rem;
-  color: #64748b;
-  margin-top: 0.25rem;
+  opacity: 0.9;
 }
 
+/* 🔽 Icon */
 .year-accordion-toggle {
   font-size: 14px;
-  color: #64748b;
   transition: transform 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .year-accordion-toggle.open {
   transform: rotate(180deg);
 }
 
+/* 📦 Content */
 .year-accordion-content {
   padding: 1.25rem;
-  background: #ffffff;
-  border-top: 1px solid #e2e8f0;
-  max-height: 500px;
-  overflow-y: auto;
+  background: #f8fafc;
 }
 
-.semester-section {
-  margin-bottom: 1.5rem;
-}
-
-.semester-section:last-child {
-  margin-bottom: 0;
-}
-
+/* 📘 Semester */
 .semester-title {
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   font-weight: 600;
   color: #475569;
-  margin-bottom: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
 }
 
+/* 🎨 Modules */
 .modules-list {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  margin-bottom: 0.5rem;
 }
 
+/* 🌈 Module buttons */
 .module-button {
-  background: #f8fafc;
-  color: #334155;
-  border: 1px solid #e2e8f0;
+  background: linear-gradient(135deg, #38bdf8, #6366f1);
+  color: white;
+  border: none;
   border-radius: 9999px;
   padding: 0.45rem 0.8rem;
   font-size: 0.75rem;
-  font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
 }
 
 .module-button:hover {
-  background: #e2e8f0;
-  border-color: #cbd5e1;
-  color: #0f172a;
+  transform: scale(1.05);
+  background: linear-gradient(135deg, #0ea5e9, #4f46e5);
 }
 
+/* ❌ Empty */
 .empty-message {
   font-size: 0.75rem;
   color: #64748b;
-  font-style: italic;
-  padding: 0.5rem 0;
 }
 
-.loading-spinner {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  flex-direction: column;
-}
-
+/* ⏳ Spinner */
 .spinner {
   width: 48px;
   height: 48px;
   border: 4px solid #e2e8f0;
-  border-top-color: #94a3b8;
+  border-top-color: #6366f1;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -178,141 +142,5 @@
 @keyframes spin {
   to {
     transform: rotate(360deg);
-  }
-}
-
-.empty-state {
-  background: #f8fafc;
-  border: 1px dashed #cbd5e1;
-  border-radius: 0.75rem;
-  padding: 2rem;
-  text-align: center;
-}
-
-.empty-state-icon {
-  font-size: 2.5rem;
-  margin-bottom: 1rem;
-}
-
-.empty-state-title {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: #0f172a;
-  margin: 0;
-}
-
-.empty-state-description {
-  color: #475569;
-  font-size: 0.875rem;
-  margin: 0.75rem 0 0 0;
-}
-
-/* Optional leftover classes if still used elsewhere */
-.materials-list {
-  margin-top: 1.25rem;
-  padding-top: 1.25rem;
-  border-top: 1px solid #e2e8f0;
-}
-
-.module-materials-section {
-  margin-bottom: 1rem;
-}
-
-.module-materials-title {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #1e293b;
-  margin-bottom: 0.75rem;
-}
-
-.material-item {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 0.5rem;
-  padding: 0.75rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  margin-bottom: 0.5rem;
-}
-
-.material-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.material-title {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #1e293b;
-  margin: 0;
-}
-
-.material-meta {
-  font-size: 0.75rem;
-  color: #64748b;
-  margin: 0.25rem 0 0 0;
-}
-
-.material-download-btn {
-  background: #e2e8f0;
-  color: #1e293b;
-  border: none;
-  border-radius: 0.375rem;
-  padding: 0.5rem 0.75rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-decoration: none;
-}
-
-.file-badge {
-  display: inline-block;
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.25rem;
-  font-size: 0.625rem;
-  font-weight: 600;
-  white-space: nowrap;
-  margin-right: 0.5rem;
-}
-
-.file-badge.pdf,
-.file-badge.doc,
-.file-badge.docx,
-.file-badge.xls,
-.file-badge.xlsx,
-.file-badge.ppt,
-.file-badge.pptx,
-.file-badge.video,
-.file-badge.audio,
-.file-badge.file {
-  background: #f1f5f9;
-  color: #334155;
-}
-
-@media (max-width: 768px) {
-  .structured-materials-container {
-    padding: 80px 16px 40px;
-  }
-
-  .structured-materials-header {
-    padding: 1.5rem;
-  }
-
-  .structured-materials-header h1 {
-    font-size: 1.5rem;
-  }
-
-  .years-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .year-accordion-header {
-    padding: 1rem;
-    font-size: 0.95rem;
-  }
-
-  .year-accordion-content {
-    padding: 1rem;
   }
 }

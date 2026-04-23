@@ -13,80 +13,54 @@ import {
   FaUserTimes,
   FaUsers,
   FaFileAlt,
-  FaPaperPlane,
+  FaDownload,
+  FaSearch,
+  FaMoon,
+  FaSun,
+  FaEye,
 } from 'react-icons/fa';
 import '../../styles/ViewApplicants.css';
 
 const ViewApplicants = () => {
-  const navigate =
-    useNavigate();
+  const navigate = useNavigate();
+  const { id: jobIdFromRoute } = useParams();
+  const { state } = useLocation();
 
-  const {
-    id:
-      jobIdFromRoute,
-  } = useParams();
+  const [job, setJob] = useState(
+    state || { title: 'Job Position' }
+  );
 
-  const { state } =
-    useLocation();
+  const [applicants, setApplicants] =
+    useState([]);
 
-  const [job, setJob] =
-    useState(
-      state || {
-        title:
-          'Job Position',
-      }
-    );
+  const [loading, setLoading] =
+    useState(true);
 
-  const [
-    applicants,
-    setApplicants,
-  ] = useState([]);
+  const [error, setError] =
+    useState('');
 
-  const [loading,
-    setLoading,
-  ] = useState(true);
+  const [emailSearch, setEmailSearch] =
+    useState('');
 
-  const [error,
-    setError,
-  ] = useState('');
+  const [searchTerm, setSearchTerm] =
+    useState('');
 
-  const [
-    emailSearch,
-    setEmailSearch,
-  ] = useState('');
+  const [statusFilter, setStatusFilter] =
+    useState('ALL');
 
-  /* NEW STATES */
-  const [
-    searchTerm,
-    setSearchTerm,
-  ] = useState('');
-
-  const [
-    statusFilter,
-    setStatusFilter,
-  ] = useState('ALL');
-
-  const [
-    sortType,
-    setSortType,
-  ] = useState('NEWEST');
-
-  const [
-    darkMode,
-    setDarkMode,
-  ] = useState(false);
+  const [darkMode, setDarkMode] =
+    useState(false);
 
   const token =
     localStorage.getItem(
       'ub_token'
     );
 
-  const authHeaders =
-    token
-      ? {
-          Authorization: `Bearer ${token}`,
-        }
-      : {};
+  const authHeaders = token
+    ? {
+        Authorization: `Bearer ${token}`,
+      }
+    : {};
 
   useEffect(() => {
     if (
@@ -102,306 +76,138 @@ const ViewApplicants = () => {
       return;
     }
 
-    const fetchApplicants =
-      async () => {
-        try {
-          let resolvedJob =
-            state;
+    fetchApplicants();
+  }, []);
 
-          const targetJobId =
-            state?._id ||
-            jobIdFromRoute;
+  const fetchApplicants =
+    async () => {
+      try {
+        let resolvedJob =
+          state;
 
-          if (
-            !resolvedJob &&
-            targetJobId
-          ) {
-            const jobsRes =
-              await axios.get(
-                'http://localhost:5000/api/jobs',
-                {
-                  headers:
-                    authHeaders,
-                }
-              );
+        const targetJobId =
+          state?._id ||
+          jobIdFromRoute;
 
-            resolvedJob =
-              (
-                jobsRes
-                  .data
-                  ?.data ||
-                []
-              ).find(
-                (
-                  item
-                ) =>
-                  String(
-                    item._id
-                  ) ===
-                  String(
-                    targetJobId
-                  )
-              );
-          }
-
-          if (
-            resolvedJob
-          ) {
-            setJob(
-              resolvedJob
-            );
-          }
-
-          if (
-            !targetJobId
-          ) {
-            setLoading(
-              false
-            );
-            return;
-          }
-
-          const res =
+        if (
+          !resolvedJob &&
+          targetJobId
+        ) {
+          const jobsRes =
             await axios.get(
-              `http://localhost:5000/api/applications/job/${targetJobId}`,
+              'http://localhost:5000/api/jobs',
               {
                 headers:
                   authHeaders,
               }
             );
 
-          setApplicants(
-            res.data
-              .data
-          );
-        } catch (err) {
-          setError(
-            err
-              .response
-              ?.data
-              ?.message ||
-              'Failed to load applicants'
-          );
-        } finally {
-          setLoading(
-            false
-          );
+          resolvedJob =
+            (
+              jobsRes.data
+                ?.data || []
+            ).find(
+              (
+                item
+              ) =>
+                String(
+                  item._id
+                ) ===
+                String(
+                  targetJobId
+                )
+            );
         }
-      };
 
-    fetchApplicants();
-  }, [
-    jobIdFromRoute,
-    state,
-    navigate,
-  ]);
+        if (resolvedJob)
+          setJob(
+            resolvedJob
+          );
 
-  const handleStatusUpdate =
-    async (
-      id,
-      status
-    ) => {
-      if (
-        !window.confirm(
-          `Are you sure you want to ${status} this applicant?`
-        )
-      )
-        return;
-
-      try {
         const res =
-          await axios.patch(
-            `http://localhost:5000/api/applications/${id}/status`,
-            {
-              status,
-            },
+          await axios.get(
+            `http://localhost:5000/api/applications/job/${targetJobId}`,
             {
               headers:
                 authHeaders,
             }
           );
 
-        if (
-          res.data
-            .success
-        ) {
-          setApplicants(
-            (
-              prev
-            ) =>
-              prev.map(
-                (
-                  app
-                ) =>
-                  app._id ===
-                  id
-                    ? {
-                        ...app,
-                        status,
-                      }
-                    : app
-              )
-          );
-        }
+        setApplicants(
+          res.data.data ||
+            []
+        );
       } catch (err) {
-        alert(
-          err
-            .response
+        setError(
+          err.response
             ?.data
             ?.message ||
-            'Failed to update status'
+            'Failed to load applicants'
+        );
+      } finally {
+        setLoading(
+          false
         );
       }
     };
 
-  const pendingCount =
-    applicants.filter(
-      (
-        app
-      ) =>
-        String(
-          app.status
-        ).toUpperCase() ===
-        'PENDING'
-    ).length;
+  const handleStatusUpdate =
+    async (
+      id,
+      status
+    ) => {
+      const ok =
+        window.confirm(
+          `Confirm ${status}?`
+        );
 
-  const selectedCount =
-    applicants.filter(
-      (
-        app
-      ) =>
-        String(
-          app.status
-        ).toUpperCase() ===
-        'SELECTED'
-    ).length;
+      if (!ok) return;
 
-  const rejectedCount =
-    applicants.filter(
-      (
-        app
-      ) =>
-        String(
-          app.status
-        ).toUpperCase() ===
-        'REJECTED'
-    ).length;
-
-  const statCards =
-    [
-      {
-        label:
-          'Total Applicants',
-        value:
-          applicants.length,
-        icon:
-          <FaUsers />,
-      },
-      {
-        label:
-          'Pending',
-        value:
-          pendingCount,
-        icon:
-          <FaUserClock />,
-      },
-      {
-        label:
-          'Selected',
-        value:
-          selectedCount,
-        icon:
-          <FaUserCheck />,
-      },
-      {
-        label:
-          'Rejected',
-        value:
-          rejectedCount,
-        icon:
-          <FaUserTimes />,
-      },
-    ];
-
-  const filteredApplicants =
-    applicants
-      .filter(
-        (
-          app
-        ) => {
-          const searchOk =
-            (
-              app.studentName ||
-              ''
-            )
-              .toLowerCase()
-              .includes(
-                searchTerm.toLowerCase()
-              ) ||
-            (
-              app.studentEmail ||
-              ''
-            )
-              .toLowerCase()
-              .includes(
-                searchTerm.toLowerCase()
-              );
-
-          const statusOk =
-            statusFilter ===
-            'ALL'
-              ? true
-              : String(
-                  app.status ||
-                    'PENDING'
-                ).toUpperCase() ===
-                statusFilter;
-
-          return (
-            searchOk &&
-            statusOk
-          );
-        }
-      )
-      .sort(
-        (
-          a,
-          b
-        ) => {
-          if (
-            sortType ===
-            'NAME'
-          ) {
-            return (
-              a.studentName ||
-              ''
-            ).localeCompare(
-              b.studentName ||
-                ''
-            );
+      try {
+        await axios.patch(
+          `http://localhost:5000/api/applications/${id}/status`,
+          { status },
+          {
+            headers:
+              authHeaders,
           }
+        );
 
-          return 0;
-        }
-      );
+        setApplicants(
+          (
+            prev
+          ) =>
+            prev.map(
+              (
+                app
+              ) =>
+                app._id ===
+                id
+                  ? {
+                      ...app,
+                      status,
+                    }
+                  : app
+            )
+        );
+      } catch {
+        alert(
+          'Update failed'
+        );
+      }
+    };
 
   const handleSearchProfile =
     (e) => {
       e.preventDefault();
 
-      const email =
-        emailSearch
-          .trim()
-          .toLowerCase();
-
       if (
-        !email ||
-        !email.includes(
+        !emailSearch.includes(
           '@'
         )
       ) {
         setError(
-          'Please enter valid email'
+          'Enter valid email'
         );
         return;
       }
@@ -410,7 +216,8 @@ const ViewApplicants = () => {
         '/employer/students/profile',
         {
           state: {
-            email,
+            email:
+              emailSearch,
             _origin:
               'employer-applicants',
           },
@@ -440,37 +247,13 @@ const ViewApplicants = () => {
         filteredApplicants.map(
           (
             app
-          ) => ({
-            Name:
-              app.studentName,
-            Email:
-              app.studentEmail,
-            Status:
-              app.status,
-          })
+          ) =>
+            `${app.studentName},${app.studentEmail},${app.status}`
         );
 
       const csv =
-        [
-          Object.keys(
-            rows[0] ||
-              {}
-          ).join(
-            ','
-          ),
-          ...rows.map(
-            (
-              r
-            ) =>
-              Object.values(
-                r
-              ).join(
-                ','
-              )
-          ),
-        ].join(
-          '\n'
-        );
+        'Name,Email,Status\n' +
+        rows.join('\n');
 
       const blob =
         new Blob(
@@ -498,6 +281,74 @@ const ViewApplicants = () => {
       a.click();
     };
 
+  const filteredApplicants =
+    applicants.filter(
+      (
+        app
+      ) => {
+        const matchSearch =
+          (
+            app.studentName ||
+            ''
+          )
+            .toLowerCase()
+            .includes(
+              searchTerm.toLowerCase()
+            ) ||
+          (
+            app.studentEmail ||
+            ''
+          )
+            .toLowerCase()
+            .includes(
+              searchTerm.toLowerCase()
+            );
+
+        const matchStatus =
+          statusFilter ===
+          'ALL'
+            ? true
+            : String(
+                app.status
+              ).toUpperCase() ===
+              statusFilter;
+
+        return (
+          matchSearch &&
+          matchStatus
+        );
+      }
+    );
+
+  const stats = {
+    total:
+      applicants.length,
+    pending:
+      applicants.filter(
+        (
+          a
+        ) =>
+          a.status ===
+          'PENDING'
+      ).length,
+    selected:
+      applicants.filter(
+        (
+          a
+        ) =>
+          a.status ===
+          'SELECTED'
+      ).length,
+    rejected:
+      applicants.filter(
+        (
+          a
+        ) =>
+          a.status ===
+          'REJECTED'
+      ).length,
+  };
+
   return (
     <div
       className={`container page applicants-page ${
@@ -512,125 +363,117 @@ const ViewApplicants = () => {
           className="applicants-back-link"
         >
           <FaArrowLeft />
-          Back to Dashboard
+          Back
         </Link>
       </div>
 
+      {/* HERO */}
       <section className="applicants-hero card">
-        <div className="applicants-hero-tag">
-          Talent Pipeline
-        </div>
-
         <div className="applicants-hero-main">
           <div>
             <h1>
-              Applicants for{' '}
-              {
-                job.title
-              }
+              {job.title}
+              {' '}
+              Applicants
             </h1>
 
             <p>
-              Review
-              candidate
-              profiles
-              faster.
+              Easy candidate
+              management panel.
             </p>
-
-            <div
-              style={{
-                display:
-                  'flex',
-                gap:
-                  '10px',
-                flexWrap:
-                  'wrap',
-                marginTop:
-                  '14px',
-              }}
-            >
-              <button
-                className="btn btn-outline btn-sm"
-                onClick={() =>
-                  setDarkMode(
-                    !darkMode
-                  )
-                }
-              >
-                {darkMode
-                  ? '☀ Light'
-                  : '🌙 Dark'}
-              </button>
-
-              <button
-                className="btn btn-primary btn-sm"
-                onClick={
-                  exportCSV
-                }
-              >
-                Export CSV
-              </button>
-            </div>
           </div>
 
-          <div className="applicants-hero-meta">
-            <span>
-              {job.company ||
-                'Company'}
-            </span>
+          <div
+            style={{
+              display:
+                'flex',
+              gap: '10px',
+              flexWrap:
+                'wrap',
+            }}
+          >
+            <button
+              className="btn btn-outline"
+              onClick={() =>
+                setDarkMode(
+                  !darkMode
+                )
+              }
+            >
+              {darkMode ? (
+                <FaSun />
+              ) : (
+                <FaMoon />
+              )}
+            </button>
 
-            <span>
-              {job.location ||
-                'Location'}
-            </span>
+            <button
+              className="btn btn-primary"
+              onClick={
+                exportCSV
+              }
+            >
+              <FaDownload />
+              Export
+            </button>
           </div>
         </div>
       </section>
 
+      {/* STATS */}
       <section className="applicants-stats-grid">
-        {statCards.map(
-          (
-            item
-          ) => (
-            <article
-              key={
-                item.label
-              }
-              className="applicants-stat-card"
-            >
-              <div className="applicants-stat-icon">
-                {
-                  item.icon
-                }
-              </div>
+        <StatCard
+          icon={
+            <FaUsers />
+          }
+          title="Total"
+          value={
+            stats.total
+          }
+        />
 
-              <div>
-                <h3>
-                  {
-                    item.value
-                  }
-                </h3>
-                <p>
-                  {
-                    item.label
-                  }
-                </p>
-              </div>
-            </article>
-          )
-        )}
+        <StatCard
+          icon={
+            <FaUserClock />
+          }
+          title="Pending"
+          value={
+            stats.pending
+          }
+        />
+
+        <StatCard
+          icon={
+            <FaUserCheck />
+          }
+          title="Selected"
+          value={
+            stats.selected
+          }
+        />
+
+        <StatCard
+          icon={
+            <FaUserTimes />
+          }
+          title="Rejected"
+          value={
+            stats.rejected
+          }
+        />
       </section>
 
+      {/* TOOLBAR */}
       <section className="card applicants-search-card">
         <form
-          className="applicants-search-form"
           onSubmit={
             handleSearchProfile
           }
+          className="applicants-search-form"
         >
           <input
             type="email"
-            placeholder="student@email.com"
+            placeholder="Search profile by email"
             value={
               emailSearch
             }
@@ -645,7 +488,8 @@ const ViewApplicants = () => {
           />
 
           <button className="btn btn-primary">
-            Search Profile
+            <FaSearch />
+            Search
           </button>
         </form>
 
@@ -654,11 +498,10 @@ const ViewApplicants = () => {
             display:
               'grid',
             gridTemplateColumns:
-              'repeat(auto-fit,minmax(220px,1fr))',
-            gap:
-              '12px',
+              '2fr 1fr',
+            gap: '12px',
             marginTop:
-              '12px',
+              '14px',
           }}
         >
           <input
@@ -702,27 +545,6 @@ const ViewApplicants = () => {
               Rejected
             </option>
           </select>
-
-          <select
-            value={
-              sortType
-            }
-            onChange={(
-              e
-            ) =>
-              setSortType(
-                e.target
-                  .value
-              )
-            }
-          >
-            <option value="NEWEST">
-              Default
-            </option>
-            <option value="NAME">
-              Name A-Z
-            </option>
-          </select>
         </div>
       </section>
 
@@ -744,8 +566,7 @@ const ViewApplicants = () => {
             No Applicants
           </h2>
           <p>
-            No data
-            found.
+            No records found.
           </p>
         </section>
       ) : (
@@ -754,11 +575,13 @@ const ViewApplicants = () => {
             <h2>
               Candidate List
             </h2>
+
             <span>
               {
                 filteredApplicants.length
-              }{' '}
-              total
+              }
+              {' '}
+              Results
             </span>
           </div>
 
@@ -818,7 +641,7 @@ const ViewApplicants = () => {
                             target="_blank"
                             rel="noreferrer"
                           >
-                            View CV
+                            View
                           </a>
                         ) : (
                           '-'
@@ -826,15 +649,19 @@ const ViewApplicants = () => {
                       </td>
 
                       <td>
-                        {
-                          app.status
-                        }
+                        <span
+                          className={`badge badge-${String(
+                            app.status
+                          ).toLowerCase()}`}
+                        >
+                          {
+                            app.status
+                          }
+                        </span>
                       </td>
 
                       <td>
-                        {String(
-                          app.status
-                        ).toUpperCase() ===
+                        {app.status ===
                         'PENDING' ? (
                           <>
                             <button
@@ -875,7 +702,7 @@ const ViewApplicants = () => {
                             )
                           }
                         >
-                          View Profile
+                          <FaEye />
                         </button>
                       </td>
                     </tr>
@@ -889,5 +716,22 @@ const ViewApplicants = () => {
     </div>
   );
 };
+
+const StatCard = ({
+  icon,
+  title,
+  value,
+}) => (
+  <article className="applicants-stat-card">
+    <div className="applicants-stat-icon">
+      {icon}
+    </div>
+
+    <div>
+      <h3>{value}</h3>
+      <p>{title}</p>
+    </div>
+  </article>
+);
 
 export default ViewApplicants;
